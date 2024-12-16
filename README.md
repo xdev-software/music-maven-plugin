@@ -68,7 +68,7 @@ You can customize the music by adding other sources:
 ## Installation
 [Installation guide for the latest release](https://github.com/xdev-software/music-maven-plugin/releases/latest#Installation)
 
-### Run the demo
+## Run the demo
 
 > [!WARNING]
 > Might be loud!
