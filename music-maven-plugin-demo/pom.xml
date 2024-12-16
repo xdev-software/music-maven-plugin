@@ -107,7 +107,7 @@
 						</goals>
 						<configuration>
 							<arguments>
-								<argument>7000</argument>
+								<argument>5000</argument>
 							</arguments>
 						</configuration>
 					</execution>

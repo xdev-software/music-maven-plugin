@@ -106,49 +106,8 @@ public class MusicMojo extends AbstractMojo
 		}
 		
 		final Thread thread = new Thread(
-			() -> {
-				try
-				{
-					final List<MusicSource> sourcesWorkingCopy = new ArrayList<>(this.sources);
-					if(this.shuffle)
-					{
-						Collections.shuffle(sourcesWorkingCopy);
-					}
-					
-					final MP3OggPlayer player = PlayerInstance.get()
-						.map(p -> {
-							this.getLog().debug("Stopping music");
-							p.stopAndWaitUntilFinished();
-							return p;
-						})
-						.orElseGet(() -> PlayerInstance.set(new MP3OggPlayer()));
-					
-					boolean wasStopped = false;
-					do
-					{
-						for(final MusicSource source : sourcesWorkingCopy)
-						{
-							this.getLog().info("[🎵] Now playing: " + source);
-							try(final InputStream is = source.openInputStream())
-							{
-								if(player.play(
-									is,
-									Optional.ofNullable(source.getVolumeDB()).orElse(this.defaultVolumeDB)))
-								{
-									wasStopped = true;
-									break;
-								}
-							}
-						}
-					}
-					while(this.repeat && !wasStopped);
-				}
-				catch(final Exception ex)
-				{
-					this.getLog().warn("Failed to play stream", ex);
-				}
-			},
-			"Maven-Background-Music-Player-" + THREAD_COUNTER.getAndIncrement());
+			this::runOnThread,
+			"Maven-Music-Player-" + THREAD_COUNTER.getAndIncrement());
 		thread.setDaemon(true);
 		thread.start();
 		if(!this.background)
@@ -161,6 +120,50 @@ public class MusicMojo extends AbstractMojo
 			{
 				throw new IllegalStateException(e);
 			}
+		}
+	}
+	
+	private void runOnThread()
+	{
+		try
+		{
+			final List<MusicSource> sourcesWorkingCopy = new ArrayList<>(this.sources);
+			if(this.shuffle)
+			{
+				Collections.shuffle(sourcesWorkingCopy);
+			}
+			
+			final MP3OggPlayer player = PlayerInstance.get()
+				.map(p -> {
+					this.getLog().debug("Stopping music");
+					p.stopAndWaitUntilFinished();
+					return p;
+				})
+				.orElseGet(() -> PlayerInstance.set(new MP3OggPlayer()));
+			
+			boolean wasStopped = false;
+			do
+			{
+				for(final MusicSource source : sourcesWorkingCopy)
+				{
+					this.getLog().info("[🎵] Now playing: " + source);
+					try(final InputStream is = source.openInputStream())
+					{
+						if(player.play(
+							is,
+							Optional.ofNullable(source.getVolumeDB()).orElse(this.defaultVolumeDB)))
+						{
+							wasStopped = true;
+							break;
+						}
+					}
+				}
+			}
+			while(this.repeat && !wasStopped);
+		}
+		catch(final Exception ex)
+		{
+			this.getLog().warn("Failed to play stream", ex);
 		}
 	}
 }
