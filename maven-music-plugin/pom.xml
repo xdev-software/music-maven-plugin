@@ -5,17 +5,17 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>software.xdev</groupId>
-	<artifactId>maven-music-plugin</artifactId>
+	<artifactId>music-maven-plugin</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
-	<name>maven-music-plugin</name>
-	<description>maven-music-plugin</description>
-	<url>https://github.com/xdev-software/maven-music-plugin</url>
+	<name>music-maven-plugin</name>
+	<description>music-maven-plugin</description>
+	<url>https://github.com/xdev-software/music-maven-plugin</url>
 
 	<scm>
-		<url>https://github.com/xdev-software/maven-music-plugin</url>
-		<connection>scm:git:https://github.com/xdev-software/maven-music-plugin.git</connection>
+		<url>https://github.com/xdev-software/music-maven-plugin</url>
+		<connection>scm:git:https://github.com/xdev-software/music-maven-plugin.git</connection>
 	</scm>
 
 	<inceptionYear>2024</inceptionYear>

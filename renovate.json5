@@ -4,7 +4,7 @@
   "packageRules": [
     {
       "description": "Ignore project internal dependencies",
-      "packagePattern": "^software.xdev:maven-music-plugin",
+      "packagePattern": "^software.xdev:music-maven-plugin",
       "datasources": [
         "maven"
       ],

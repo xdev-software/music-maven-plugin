@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Demo" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="software.xdev.Application" />
-    <module name="maven-music-plugin-demo" />
+    <module name="music-maven-plugin-demo" />
     <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <extension name="coverage">
       <pattern>
