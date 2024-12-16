@@ -17,6 +17,7 @@ The following configuration will play some "elevator" music in the background as
     <groupId>software.xdev</groupId>
     <artifactId>music-maven-plugin</artifactId>
     <version>...</version>
+    <!-- You might also want to add <inherited>false</inherited> here to not run it in every child module -->
     <executions>
         <execution>
             <phase>validate</phase>
