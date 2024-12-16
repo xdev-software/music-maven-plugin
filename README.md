@@ -4,7 +4,7 @@
 
 # music-maven-plugin
 
-Plays some music while building.
+Plays some background music while Maven is building.
 
 ## Usage
 
