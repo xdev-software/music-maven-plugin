@@ -76,6 +76,12 @@ You can customize the music by adding other sources:
 * Checkout the repo
 * Run ``mvn install``
 
+## Why?
+This is obviously a joke/fun plugin.<br/>
+You probably shouldn't use it in production or maybe only on April 1st to annoy your colleagues :P
+
+We got the idea during XDEV's christmas party as [rfichtner](https://github.com/rfichtner) always needs more plugins for funnier Maven presentations and was inspired by [this GraalVM issue from joshlong](https://github.com/oracle/graal/issues/5327).
+
 ## Support
 If you need support as soon as possible and you can't wait for any pull request, feel free to use [our support](https://xdev.software/en/services/support).
 
