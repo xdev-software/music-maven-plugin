@@ -15,6 +15,27 @@
  */
 package software.xdev.maven.music;
 
-public class MavenMusicMojo
+import java.lang.ref.WeakReference;
+import java.util.Optional;
+
+
+public final class PlayerInstance
 {
+	private static WeakReference<MP3OggPlayer> instance;
+	
+	public static MP3OggPlayer set(final MP3OggPlayer player)
+	{
+		instance = new WeakReference<>(player);
+		return player;
+	}
+	
+	public static Optional<MP3OggPlayer> get()
+	{
+		return Optional.ofNullable(instance)
+			.map(WeakReference::get);
+	}
+	
+	private PlayerInstance()
+	{
+	}
 }

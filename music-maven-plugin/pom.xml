@@ -105,6 +105,26 @@
 			<version>3.15.1</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- This supports MP3 + OGG/vorbis -->
+		<!-- https://stackoverflow.com/a/17737483 -->
+		<!-- It's kind of hard to add other codecs since they usually require JNA bindings - which can't be
+		 loaded properly in Maven and/or with newer Java version - or require custom bindings and additional code -->
+		<dependency>
+			<groupId>com.googlecode.soundlibs</groupId>
+			<artifactId>tritonus-share</artifactId>
+			<version>0.3.7-2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.soundlibs</groupId>
+			<artifactId>mp3spi</artifactId>
+			<version>1.9.5-1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.soundlibs</groupId>
+			<artifactId>vorbisspi</artifactId>
+			<version>1.0.3-1</version>
+		</dependency>
 	</dependencies>
 
 	<reporting>

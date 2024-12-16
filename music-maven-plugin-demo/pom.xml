@@ -37,6 +37,84 @@
 				<groupId>software.xdev</groupId>
 				<artifactId>music-maven-plugin</artifactId>
 				<version>${project.version}</version>
+				<executions>
+					<execution>
+						<id>1-elevator</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>2-shuffle</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<musicSource>
+									<uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>
+								</musicSource>
+								<musicSource>
+									<classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
+								</musicSource>
+							</sources>
+							<shuffle>true</shuffle>
+						</configuration>
+					</execution>
+					<execution>
+						<id>3-finished</id>
+						<phase>package</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<musicSource>
+									<classpath>/default/First_Call.ogg</classpath>
+									<volumeDB>-15</volumeDB>
+								</musicSource>
+							</sources>
+							<!-- blocking -->
+							<background>false</background>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>1</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>5000</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>2</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>7000</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>${mainClass}</mainClass>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -48,34 +126,6 @@
 						<arg>-proc:none</arg>
 					</compilerArgs>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.7.1</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>${mainClass}</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Multi-Release>true</Multi-Release>
-						</manifestEntries>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<appendAssemblyId>false</appendAssemblyId>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
