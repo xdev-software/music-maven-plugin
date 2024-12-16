@@ -5,17 +5,17 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>software.xdev</groupId>
-	<artifactId>template-placeholder</artifactId>
+	<artifactId>maven-music-plugin</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>template-placeholder</name>
-	<description>template-placeholder</description>
-	<url>https://github.com/xdev-software/template-placeholder</url>
+	<name>maven-music-plugin</name>
+	<description>maven-music-plugin</description>
+	<url>https://github.com/xdev-software/maven-music-plugin</url>
 
 	<scm>
-		<url>https://github.com/xdev-software/template-placeholder</url>
-		<connection>scm:git:https://github.com/xdev-software/template-placeholder.git</connection>
+		<url>https://github.com/xdev-software/maven-music-plugin</url>
+		<connection>scm:git:https://github.com/xdev-software/maven-music-plugin.git</connection>
 	</scm>
 
 	<inceptionYear>2023</inceptionYear>
