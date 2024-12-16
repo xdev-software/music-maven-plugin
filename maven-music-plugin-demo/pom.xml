@@ -29,18 +29,15 @@
 		<mainClass>software.xdev.Application</mainClass>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>software.xdev</groupId>
-			<artifactId>maven-music-plugin</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		
 		<plugins>
+			<plugin>
+				<groupId>software.xdev</groupId>
+				<artifactId>maven-music-plugin</artifactId>
+				<version>${project.version}</version>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
