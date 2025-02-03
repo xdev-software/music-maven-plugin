@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>software.xdev</groupId>
-	<artifactId>template-placeholder-root</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<artifactId>music-maven-plugin-root</artifactId>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -15,8 +15,8 @@
 	</organization>
 
 	<modules>
-		<module>template-placeholder</module>
-		<module>template-placeholder-demo</module>
+		<module>music-maven-plugin</module>
+		<module>music-maven-plugin-demo</module>
 	</modules>
 
 	<properties>
