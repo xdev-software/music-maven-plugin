@@ -101,11 +101,11 @@ jobs:
           ## Installation
           Add the following lines to your pom:
           ```XML
-          <dependency>
+          <plugin>
              <groupId>software.xdev</groupId>
              <artifactId>${{ env.PRIMARY_MAVEN_MODULE }}</artifactId>
              <version>${{ steps.version.outputs.release }}</version>
-          </dependency>
+          </plugin>
           ```
 
   publish-maven:
@@ -169,6 +169,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./${{ env.PRIMARY_MAVEN_MODULE }}/target/site
+        force_orphan: true
 
   after-release:
     runs-on: ubuntu-latest

@@ -39,7 +39,7 @@ public class MusicMojo extends AbstractMojo
 {
 	protected static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
 	
-	@Parameter
+	@Parameter(property = "music.skip")
 	protected boolean skip;
 	
 	@Parameter

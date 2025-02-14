@@ -1,6 +1,7 @@
 name: ✨ Feature/Enhancement
 description: Suggest a new feature or enhancement
 labels: [enhancement]
+type: feature
 body:
   - type: markdown
     attributes:

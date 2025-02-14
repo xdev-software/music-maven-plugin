@@ -1,6 +1,7 @@
 name: 🐞 Bug
 description: Create a bug report for something that is broken
 labels: [bug]
+type: bug
 body:
   - type: markdown
     attributes:
