@@ -30,7 +30,7 @@ The following configuration will play some "elevator" music in the background as
 ```
 
 > [!TIP]
-> To not not avoiding being self-trolled/accidentally blast the music in the office space while waiting for the trollees to be trolled you can set ``-Dmusic.skip`` or a global environment variable ``MAVEN_OPTS="-Dmusic.skip=true"``
+> To avoiding being self-trolled/not accidentally blasting music in the office space while waiting for the trollees to be trolled, you can set ``-Dmusic.skip`` or a global environment variable ``MAVEN_OPTS="-Dmusic.skip=true"``
 
 ### Customizing the music
 
