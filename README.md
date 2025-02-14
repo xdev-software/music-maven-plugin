@@ -29,6 +29,9 @@ The following configuration will play some "elevator" music in the background as
 </plugin>
 ```
 
+> [!TIP]
+> To not not avoiding being self-trolled/accidentally blast the music in the office space while waiting for the trollees to be trolled you can set ``-Dmusic.skip`` or a global environment variable ``MAVEN_OPTS="-Dmusic.skip=true"``
+
 ### Customizing the music
 
 You can customize the music by adding other sources:
