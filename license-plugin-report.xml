@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<licensePluginReport goal="FORMAT" timestamp="1739536559141">
+    <module artifactId="music-maven-plugin" groupId="software.xdev" version="1.0.2"/>
+    <files>
+        <file path="src/main/java/software/xdev/maven/music/MP3OggPlayer.java" result="NOOP"/>
+        <file path="src/main/java/software/xdev/maven/music/MusicMojo.java" result="NOOP"/>
+        <file path="src/main/java/software/xdev/maven/music/MusicSource.java" result="NOOP"/>
+        <file path="src/main/java/software/xdev/maven/music/PlayerInstance.java" result="NOOP"/>
+        <file path="src/main/java/software/xdev/maven/music/StopMusicMojo.java" result="NOOP"/>
+    </files>
+</licensePluginReport>
