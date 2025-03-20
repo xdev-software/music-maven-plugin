@@ -6,12 +6,12 @@
 
 	<parent>
 		<groupId>software.xdev</groupId>
-		<artifactId>template-placeholder-root</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<artifactId>music-maven-plugin-root</artifactId>
+		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>template-placeholder-demo</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<artifactId>music-maven-plugin-demo</artifactId>
+	<version>1.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<organization>
@@ -29,56 +29,103 @@
 		<mainClass>software.xdev.Application</mainClass>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>software.xdev</groupId>
-			<artifactId>template-placeholder</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		
 		<plugins>
 			<plugin>
+				<groupId>software.xdev</groupId>
+				<artifactId>music-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<executions>
+					<execution>
+						<id>1-elevator</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>2-shuffle</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<musicSource>
+									<uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>
+								</musicSource>
+								<musicSource>
+									<classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
+								</musicSource>
+							</sources>
+							<shuffle>true</shuffle>
+						</configuration>
+					</execution>
+					<execution>
+						<id>3-finished</id>
+						<phase>package</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<musicSource>
+									<classpath>/default/First_Call.ogg</classpath>
+									<volumeDB>-15</volumeDB>
+								</musicSource>
+							</sources>
+							<!-- blocking -->
+							<background>false</background>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>1</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>5000</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>2</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>5000</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>${mainClass}</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.0</version>
+				<version>3.13.0</version>
 				<configuration>
 					<release>${maven.compiler.release}</release>
 					<compilerArgs>
 						<arg>-proc:none</arg>
 					</compilerArgs>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.7.1</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>${mainClass}</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Multi-Release>true</Multi-Release>
-						</manifestEntries>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<appendAssemblyId>false</appendAssemblyId>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
