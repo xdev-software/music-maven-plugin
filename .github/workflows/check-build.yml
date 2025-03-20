@@ -127,7 +127,4 @@ jobs:
         name: pmd-report
         if-no-files-found: ignore
         path: |
-          target/site/*.html
-          target/site/css/**
-          target/site/images/logos/maven-feather.png
-          target/site/images/external.png
+          target/reports/**

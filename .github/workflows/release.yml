@@ -26,7 +26,7 @@ jobs:
         cache: 'maven'
       
     - name: Build with Maven
-      run: ./mvnw -B clean package
+      run: ./mvnw -B clean package -T2C
       
     - name: Check for uncommited changes
       run: |
@@ -64,7 +64,7 @@ jobs:
       run: |
         mvnwPath=$(readlink -f ./mvnw)
         modules=("") # root
-        modules+=($(grep -ozP '(?<=module>)[^<]+' 'pom.xml' | tr -d '\0'))
+        modules+=($(grep -oP '(?<=<module>)[^<]+' 'pom.xml'))
         for i in "${modules[@]}"
         do
             echo "Processing $i/pom.xml"
@@ -121,7 +121,7 @@ jobs:
         git config --global user.name "GitHub Actions"
         git pull
     
-    - name: Set up JDK Apache Maven Central
+    - name: Set up JDK OSSRH
       uses: actions/setup-java@v4
       with: # running setup-java again overwrites the settings.xml
         java-version: '17'
@@ -132,7 +132,7 @@ jobs:
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
-    - name: Publish to Apache Maven Central
+    - name: Publish to OSSRH
       run: ../mvnw -B deploy -Possrh -DskipTests
       env:
         MAVEN_CENTRAL_USERNAME: ${{ secrets.S01_OSS_SONATYPE_MAVEN_USERNAME }}
@@ -188,7 +188,7 @@ jobs:
       run: |
         mvnwPath=$(readlink -f ./mvnw)
         modules=("") # root
-        modules+=($(grep -ozP '(?<=module>)[^<]+' 'pom.xml' | tr -d '\0'))
+        modules+=($(grep -oP '(?<=<module>)[^<]+' 'pom.xml'))
         for i in "${modules[@]}"
         do
             echo "Processing $i/pom.xml"
