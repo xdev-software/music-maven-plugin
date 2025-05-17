@@ -54,6 +54,33 @@ You can customize the music by adding other sources:
 </configuration>
 ```
 
+### Spotify Integration
+
+You can also play music from Spotify:
+
+```xml
+<configuration>
+    <sources>
+        <musicSource>
+            <!-- Spotify URI format -->
+            <spotifyUri>spotify:track:4cOdK2wGLETKBW3PvgPWqT</spotifyUri>
+            <spotifyShuffle>true</spotifyShuffle>  <!-- Optional: Enable shuffle -->
+        </musicSource>
+        <!-- Or using Spotify URL format -->
+        <musicSource>
+            <spotifyUri>https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M</spotifyUri>
+        </musicSource>
+    </sources>
+</configuration>
+```
+
+> [!NOTE]
+> For Spotify integration to work:
+> - Spotify desktop application must be installed
+> - Spotify must be running when the build starts
+> - You must be logged into Spotify
+> - A valid Spotify URI or URL must be provided
+
 #### Supported codecs
 
 | Codec | Container |
