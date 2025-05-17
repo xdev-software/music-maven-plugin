@@ -38,48 +38,48 @@
 				<artifactId>music-maven-plugin</artifactId>
 				<version>${project.version}</version>
 				<executions>
-<!--					<execution>-->
-<!--						<id>1-elevator</id>-->
-<!--						<phase>validate</phase>-->
-<!--						<goals>-->
-<!--							<goal>music</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--					<execution>-->
-<!--						<id>2-shuffle</id>-->
-<!--						<phase>prepare-package</phase>-->
-<!--						<goals>-->
-<!--							<goal>music</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<sources>-->
-<!--								<musicSource>-->
-<!--									<uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>-->
-<!--								</musicSource>-->
-<!--								<musicSource>-->
-<!--									<classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>-->
-<!--								</musicSource>-->
-<!--							</sources>-->
-<!--							<shuffle>true</shuffle>-->
-<!--						</configuration>-->
-<!--					</execution>-->
-<!--					<execution>-->
-<!--						<id>3-finished</id>-->
-<!--						<phase>package</phase>-->
-<!--						<goals>-->
-<!--							<goal>music</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<sources>-->
-<!--								<musicSource>-->
-<!--									<classpath>/default/First_Call.ogg</classpath>-->
-<!--									<volumeDB>-15</volumeDB>-->
-<!--								</musicSource>-->
-<!--							</sources>-->
-<!--							&lt;!&ndash; blocking &ndash;&gt;-->
-<!--							<background>false</background>-->
-<!--						</configuration>-->
-<!--					</execution>-->
+					<execution>
+						<id>1-elevator</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>2-shuffle</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<musicSource>
+									<uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>
+								</musicSource>
+								<musicSource>
+									<classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
+								</musicSource>
+							</sources>
+							<shuffle>true</shuffle>
+						</configuration>
+					</execution>
+					<execution>
+						<id>3-finished</id>
+						<phase>package</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<musicSource>
+									<classpath>/default/First_Call.ogg</classpath>
+									<volumeDB>-15</volumeDB>
+								</musicSource>
+							</sources>
+							<!-- blocking -->
+							<background>false</background>
+						</configuration>
+					</execution>
 
 					<execution>
 						<id>4-spotify</id>
