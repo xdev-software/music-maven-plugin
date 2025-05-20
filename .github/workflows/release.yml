@@ -121,22 +121,22 @@ jobs:
         git config --global user.name "GitHub Actions"
         git pull
     
-    - name: Set up JDK OSSRH
+    - name: Set up JDK
       uses: actions/setup-java@v4
       with: # running setup-java again overwrites the settings.xml
         java-version: '17'
         distribution: 'temurin'
-        server-id: ossrh
+        server-id: sonatype-central-portal
         server-username: MAVEN_CENTRAL_USERNAME
         server-password: MAVEN_CENTRAL_TOKEN
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
-    - name: Publish to OSSRH
-      run: ../mvnw -B deploy -Possrh -DskipTests
+    - name: Publish to Central Portal
+      run: ../mvnw -B deploy -P publish-sonatype-central-portal -DskipTests
       env:
-        MAVEN_CENTRAL_USERNAME: ${{ secrets.S01_OSS_SONATYPE_MAVEN_USERNAME }}
-        MAVEN_CENTRAL_TOKEN: ${{ secrets.S01_OSS_SONATYPE_MAVEN_TOKEN }}
+        MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
       working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
 
