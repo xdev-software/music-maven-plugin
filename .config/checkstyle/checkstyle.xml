@@ -52,6 +52,7 @@
 	<module name="TreeWalker">
 		<!-- Checks - sorted alphabetically -->
 		<module name="ArrayTypeStyle"/>
+		<module name="AvoidDoubleBraceInitialization"/>
 		<module name="AvoidStarImport"/>
 		<module name="ConstantName"/>
 		<module name="DefaultComesLast"/>
@@ -68,6 +69,11 @@
 		<module name="FinalParameters"/>
 		<module name="GenericWhitespace"/>
 		<module name="HideUtilityClassConstructor"/>
+		<module name="IllegalCatch">
+			<!-- https://docs.pmd-code.org/pmd-doc-7.11.0/pmd_rules_java_errorprone.html#avoidcatchingnpe -->
+			<!-- https://docs.pmd-code.org/pmd-doc-7.11.0/pmd_rules_java_errorprone.html#avoidcatchingthrowable -->
+			<property name="illegalClassNames" value="Error,Throwable,NullPointerException,java.lang.Error,java.lang.Throwable,java.lang.NullPointerException"/>
+		</module>
 		<module name="IllegalImport"/>
 		<module name="InterfaceIsType"/>
 		<module name="JavadocStyle">
@@ -93,7 +99,6 @@
 		<module name="MethodParamPad"/>
 		<module name="MissingDeprecated"/>
 		<module name="MissingOverride"/>
-		<module name="MissingSwitchDefault"/>
 		<module name="ModifierOrder"/>
 		<module name="NeedBraces"/>
 		<module name="NoClone"/>
@@ -122,7 +127,13 @@
 		</module>
 		<module name="TypecastParenPad"/>
 		<module name="TypeName"/>
+		<module name="UnnecessaryParentheses"/>
+		<module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+		<module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+		<module name="UnnecessarySemicolonInEnumeration"/>
+		<module name="UnnecessarySemicolonInTryWithResources"/>
 		<module name="UnusedImports"/>
+		<module name="UnusedLocalVariable"/>
 		<module name="UpperEll"/>
 		<module name="VisibilityModifier">
 			<property name="packageAllowed" value="true"/>

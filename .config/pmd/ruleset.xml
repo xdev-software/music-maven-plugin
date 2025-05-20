@@ -10,16 +10,38 @@
 
 	<!-- Only rules that don't overlap with CheckStyle! -->
 
+	<rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
+	<rule ref="category/java/bestpractices.xml/AvoidStringBufferField"/>
 	<rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
+	<rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
+	<rule ref="category/java/bestpractices.xml/ExhaustiveSwitchHasDefault"/>
+	<rule ref="category/java/bestpractices.xml/LiteralsFirstInComparisons"/>
+	<!-- CheckStyle can't handle this switch behavior -> delegated to PMD -->
+	<rule ref="category/java/bestpractices.xml/NonExhaustiveSwitch"/>
+	<rule ref="category/java/bestpractices.xml/OneDeclarationPerLine">
+		<properties>
+			<property name="strictMode" value="true"/>
+		</properties>
+	</rule>
 	<rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
+	<rule ref="category/java/bestpractices.xml/SimplifiableTestAssertion"/>
+	<rule ref="category/java/bestpractices.xml/SystemPrintln"/>
+	<rule ref="category/java/bestpractices.xml/UnusedAssignment"/>
+	<rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
+	<rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+	<rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
 	<rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty"/>
+	<rule ref="category/java/bestpractices.xml/UseEnumCollections"/>
 	<rule ref="category/java/bestpractices.xml/UseStandardCharsets"/>
+	<rule ref="category/java/bestpractices.xml/UseTryWithResources"/>
 
 	<!-- Native code is platform dependent; Loading external native libs might pose a security threat -->
 	<rule ref="category/java/codestyle.xml/AvoidUsingNativeCode"/>
 	<rule ref="category/java/codestyle.xml/IdenticalCatchBranches"/>
+	<rule ref="category/java/codestyle.xml/LambdaCanBeMethodReference"/>
 	<rule ref="category/java/codestyle.xml/NoPackage"/>
 	<rule ref="category/java/codestyle.xml/PrematureDeclaration"/>
+	<rule ref="category/java/codestyle.xml/UnnecessarySemicolon"/>
 
 	<rule ref="category/java/design.xml">
 		<!-- Sometimes abstract classes have just fields -->
@@ -76,9 +98,6 @@
 
 		<!-- Limit too low -->
 		<exclude name="UseObjectForClearerAPI"/>
-
-		<!-- Handled by checkstyle -->
-		<exclude name="UseUtilityClass"/>
 	</rule>
 
 	<rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
@@ -114,17 +133,33 @@
 		</properties>
 	</rule>
 
+	<rule ref="category/java/errorprone.xml/AssignmentToNonFinalStatic"/>
+	<rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
+	<rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators"/>
 	<rule ref="category/java/errorprone.xml/AvoidUsingOctalValues"/>
 	<rule ref="category/java/errorprone.xml/BrokenNullCheck"/>
 	<rule ref="category/java/errorprone.xml/ComparisonWithNaN"/>
 	<rule ref="category/java/errorprone.xml/DoNotCallGarbageCollectionExplicitly"/>
 	<rule ref="category/java/errorprone.xml/DontImportSun"/>
+	<rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
+	<rule ref="category/java/errorprone.xml/EqualsNull"/>
+	<rule ref="category/java/errorprone.xml/IdempotentOperations"/>
+	<rule ref="category/java/errorprone.xml/ImplicitSwitchFallThrough"/>
+	<rule ref="category/java/errorprone.xml/InstantiationToGetClass"/>
+	<rule ref="category/java/errorprone.xml/InvalidLogMessageFormat"/>
+	<rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
 	<rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
+	<rule ref="category/java/errorprone.xml/MoreThanOneLogger"/>
+	<rule ref="category/java/errorprone.xml/NonStaticInitializer"/>
+	<rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock"/>
+	<rule ref="category/java/errorprone.xml/SingletonClassReturningNewInstance"/>
+	<rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
 	<rule ref="category/java/errorprone.xml/UnnecessaryCaseChange"/>
+	<rule ref="category/java/errorprone.xml/UselessOperationOnImmutable"/>
 
 
 	<rule ref="category/java/multithreading.xml">
-		<!-- Just bloats code -->
+		<!-- Just bloats code; improved in JEP-491/Java 24+ -->
 		<exclude name="AvoidSynchronizedAtMethodLevel"/>
 
 		<!-- NOPE -->

@@ -19,7 +19,7 @@ jobs:
 
       - name: Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@v2
+        uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2
         with:
           fail: false # Don't fail on broken links, create an issue instead
 
@@ -38,7 +38,7 @@ jobs:
 
       - name: Create Issue From File
         if: env.lychee_exit_code != 0
-        uses: peter-evans/create-issue-from-file@v5
+        uses: peter-evans/create-issue-from-file@e8ef132d6df98ed982188e460ebb3b5d4ef3a9cd # v5
         with:
           issue-number: ${{ steps.find-issue.outputs.number }}
           title: Link Checker Report

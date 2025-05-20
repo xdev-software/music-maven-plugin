@@ -26,7 +26,7 @@ jobs:
         cache: 'maven'
       
     - name: Build with Maven
-      run: ./mvnw -B clean package
+      run: ./mvnw -B clean package -T2C
       
     - name: Check for uncommited changes
       run: |
@@ -64,7 +64,7 @@ jobs:
       run: |
         mvnwPath=$(readlink -f ./mvnw)
         modules=("") # root
-        modules+=($(grep -ozP '(?<=module>)[^<]+' 'pom.xml' | tr -d '\0'))
+        modules+=($(grep -oP '(?<=<module>)[^<]+' 'pom.xml'))
         for i in "${modules[@]}"
         do
             echo "Processing $i/pom.xml"
@@ -89,7 +89,7 @@ jobs:
     
     - name: Create Release
       id: create_release
-      uses: shogo82148/actions-create-release@v1
+      uses: shogo82148/actions-create-release@e5f206451d4ace2da9916d01f1aef279997f8659 # v1
       with:
         tag_name: v${{ steps.version.outputs.release }}
         release_name: v${{ steps.version.outputs.release }}
@@ -121,22 +121,22 @@ jobs:
         git config --global user.name "GitHub Actions"
         git pull
     
-    - name: Set up JDK Apache Maven Central
+    - name: Set up JDK
       uses: actions/setup-java@v4
       with: # running setup-java again overwrites the settings.xml
         java-version: '17'
         distribution: 'temurin'
-        server-id: ossrh
+        server-id: sonatype-central-portal
         server-username: MAVEN_CENTRAL_USERNAME
         server-password: MAVEN_CENTRAL_TOKEN
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
-    - name: Publish to Apache Maven Central
-      run: ../mvnw -B deploy -Possrh -DskipTests
+    - name: Publish to Central Portal
+      run: ../mvnw -B deploy -P publish-sonatype-central-portal -DskipTests
       env:
-        MAVEN_CENTRAL_USERNAME: ${{ secrets.S01_OSS_SONATYPE_MAVEN_USERNAME }}
-        MAVEN_CENTRAL_TOKEN: ${{ secrets.S01_OSS_SONATYPE_MAVEN_TOKEN }}
+        MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
       working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
 
@@ -165,7 +165,7 @@ jobs:
       working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
 
     - name: Deploy to Github pages
-      uses: peaceiris/actions-gh-pages@v4
+      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./${{ env.PRIMARY_MAVEN_MODULE }}/target/site
@@ -188,7 +188,7 @@ jobs:
       run: |
         mvnwPath=$(readlink -f ./mvnw)
         modules=("") # root
-        modules+=($(grep -ozP '(?<=module>)[^<]+' 'pom.xml' | tr -d '\0'))
+        modules+=($(grep -oP '(?<=<module>)[^<]+' 'pom.xml'))
         for i in "${modules[@]}"
         do
             echo "Processing $i/pom.xml"

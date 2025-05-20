@@ -202,7 +202,7 @@ jobs:
           GH_TOKEN: ${{ secrets.UPDATE_FROM_TEMPLATE_PAT }}
         run: |
           not_failed_conclusion="skipped|neutral|success"
-          not_relevant_app_slug="dependabot|github-pages|sonarcloud"
+          not_relevant_app_slug="dependabot|github-pages|sonarqubecloud"
 
           echo "Waiting for checks to start..."
           sleep 40s
@@ -212,7 +212,7 @@ jobs:
 
             echo "Checking if update-branch-merged exists"
             git fetch
-            if [[ $(git rev-parse origin/${{ env.UPDATE_BRANCH_MERGED }}) ]]; then
+            if [[ $(git ls-remote --heads origin refs/heads/${{ env.UPDATE_BRANCH_MERGED }}) ]]; then
               echo "Branch still exists; Continuing..."
             else
               echo "Branch origin/${{ env.UPDATE_BRANCH_MERGED }} is missing"
