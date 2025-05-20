@@ -80,6 +80,24 @@
 							<background>false</background>
 						</configuration>
 					</execution>
+
+					<execution>
+						<id>4-spotify</id>
+						<phase>package</phase>
+						<goals>
+							<goal>music</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<musicSource>
+									<spotifyUri>https://open.spotify.com/album/5Z9iiGl2FcIfa3BMiv6OIw</spotifyUri>
+									<volumeDB>-15</volumeDB>
+								</musicSource>
+							</sources>
+							<!-- blocking -->
+							<background>false</background>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
