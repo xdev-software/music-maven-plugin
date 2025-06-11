@@ -29,7 +29,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-
 @Mojo(
 	name = "music",
 	defaultPhase = LifecyclePhase.VALIDATE,
@@ -147,14 +146,28 @@ public class MusicMojo extends AbstractMojo
 				for(final MusicSource source : sourcesWorkingCopy)
 				{
 					this.getLog().info("[🎵] Now playing: " + source);
-					try(final InputStream is = source.openInputStream())
-					{
-						if(player.play(
-							is,
-							Optional.ofNullable(source.getVolumeDB()).orElse(this.defaultVolumeDB)))
+					
+					boolean isSpotifySource = source.getSpotifyUri() != null
+						&& !source.getSpotifyUri().trim().isEmpty();
+					
+					if (isSpotifySource) {
+						try {
+							source.initializeSpotify();
+							source.playSpotify(); // This is fire-and-forget
+						} catch (MojoExecutionException e) {
+							this.getLog().warn("Failed to initialize or play Spotify source ["
+									+ source.getSpotifyUri() + "]: " + e.getMessage());
+						}
+					} else {
+						try(final InputStream is = source.openInputStream())
 						{
-							wasStopped = true;
-							break;
+							if(player.play(
+								is,
+								Optional.ofNullable(source.getVolumeDB()).orElse(this.defaultVolumeDB)))
+							{
+								wasStopped = true;
+								break;
+							}
 						}
 					}
 				}
