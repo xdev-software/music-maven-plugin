@@ -15,9 +15,13 @@
  */
 package software.xdev.maven.music.sources;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import software.xdev.maven.music.sources.mp3ogg.ClassPathMusicSource;
 import software.xdev.maven.music.sources.mp3ogg.FileMusicSource;
 import software.xdev.maven.music.sources.mp3ogg.URIMusicSource;
+import software.xdev.maven.music.sources.spotify.SpotifyMusicSource;
 
 
 public class WrappedMusicSource implements MusicSource
@@ -25,6 +29,8 @@ public class WrappedMusicSource implements MusicSource
 	private ClassPathMusicSource classpath;
 	private URIMusicSource uri;
 	private FileMusicSource file;
+	
+	private SpotifyMusicSource spotify;
 	
 	public WrappedMusicSource()
 	{
@@ -37,15 +43,10 @@ public class WrappedMusicSource implements MusicSource
 	
 	public MusicSource getMusicSource()
 	{
-		if(this.classpath != null)
-		{
-			return this.classpath;
-		}
-		if(this.uri != null)
-		{
-			return this.uri;
-		}
-		return this.file;
+		return Stream.of(this.classpath, this.uri, this.file, this.spotify)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("No source defined"));
 	}
 	
 	public ClassPathMusicSource getClasspath()

@@ -1,8 +1,11 @@
 # 2.0.0
 _This release contains breaking changes_
 
-* Redesigned project to easier make custom extensions possible
-* New declaration format:
+* Redesigned the project to make it easier to implement custom extensions
+* Added support for Spotify #41 @aboullaite
+
+New configuration format in ``pom.xml``:
+
 Old:
 ```xml
 <configuration>
@@ -38,6 +41,11 @@ New:
             <classpath>
                 <classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
             </classpath>
+        </source>
+        <source>
+            <spotify>
+                <uri>spotify:track:4cOdK2wGLETKBW3PvgPWqT</uri>
+            </spotify>
         </source>
     </sources>
 </configuration>

@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 
 
+/**
+ * Uses a file as a music source.
+ */
 public class FileMusicSource extends MP3OggMusicSource
 {
 	private String file;

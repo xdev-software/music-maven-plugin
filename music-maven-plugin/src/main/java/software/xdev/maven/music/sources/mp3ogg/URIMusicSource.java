@@ -21,6 +21,9 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 
 
+/**
+ * Uses a URI as a music source.
+ */
 public class URIMusicSource extends MP3OggMusicSource
 {
 	private String uri;

@@ -1,3 +1,18 @@
+/*
+ * Copyright © 2024 XDEV Software (https://xdev.software)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package software.xdev.maven.music.player;
 
 import java.io.BufferedReader;
@@ -6,19 +21,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.maven.plugin.logging.Log;
 
 import software.xdev.maven.music.sources.spotify.SpotifyMusicSource;
 
 
-public class SpotifyPlayer extends StoppablePlayer<SpotifyMusicSource>
+public class SpotifyPlayer implements Player<SpotifyMusicSource>
 {
 	private static final String OS_NAME_LOWER = System.getProperty("os.name", "")
 		.toLowerCase(Locale.ENGLISH);
-	
-	private final AtomicReference<Process> currentProcessRef = new AtomicReference<>();
 	
 	@Override
 	public Class<SpotifyMusicSource> supportedMusicSourceType()
@@ -27,7 +39,7 @@ public class SpotifyPlayer extends StoppablePlayer<SpotifyMusicSource>
 	}
 	
 	@Override
-	protected boolean playInternal(final SpotifyMusicSource source, final float defaultVolumeDB, final Log log)
+	public boolean play(final SpotifyMusicSource source, final float defaultVolumeDB, final Log log)
 	{
 		final String uri = source.getResolvedUri();
 		
@@ -57,12 +69,11 @@ public class SpotifyPlayer extends StoppablePlayer<SpotifyMusicSource>
 		try
 		{
 			final Process process = pb.start();
-			this.currentProcessRef.set(process);
 			final String stdOut = consumeStream(process.getInputStream());
 			final String stdErr = consumeStream(process.getErrorStream());
 			final int exitCode = process.waitFor();
 			
-			if(!this.externalStop && exitCode != 0)
+			if(exitCode != 0)
 			{
 				String errorMessage = String.format(
 					"Failed to play Spotify URI '%s'. Exit code: %d.",
@@ -88,25 +99,14 @@ public class SpotifyPlayer extends StoppablePlayer<SpotifyMusicSource>
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException("Got interrupted", e);
 		}
-		finally
-		{
-			this.currentProcessRef.set(null);
-		}
 		
-		return this.externalStop;
+		return false;
 	}
 	
 	@Override
 	public void stop()
 	{
-		super.stop();
-		
-		final Process currentProcess = this.currentProcessRef.get();
-		if(currentProcess != null)
-		{
-			currentProcess.destroy();
-			this.currentProcessRef.set(null);
-		}
+		// Can't be stopped
 	}
 	
 	static String consumeStream(final InputStream stream)

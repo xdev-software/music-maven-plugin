@@ -18,6 +18,9 @@ package software.xdev.maven.music.sources.mp3ogg;
 import java.io.InputStream;
 
 
+/**
+ * Uses a classpath file as a music source.
+ */
 public class ClassPathMusicSource extends MP3OggMusicSource
 {
 	private String classpath;

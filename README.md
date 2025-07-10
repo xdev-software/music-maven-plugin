@@ -75,6 +75,34 @@ You can customize the music by adding other sources:
 > If you want to convert to supported formats you can do so with [``ffmpeg``](https://www.ffmpeg.org/):<br/>
 > ``ffmpeg -i music.opus music.ogg``
 
+### Spotify
+
+You can also play music from Spotify:
+
+```xml
+<configuration>
+    <sources>
+        <source>
+            <spotify>
+                <uri>spotify:track:4cOdK2wGLETKBW3PvgPWqT</uri>
+                <!-- Alternatively you can also use a URL like -->
+                <!-- https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M -->
+            </spotify>
+        </source>
+    </sources>
+    <!-- Required, otherwise the song is started constantly in a loop -->
+    <repeat>false</repeat>
+</configuration>
+```
+
+> [!NOTE]
+> Requirements/Limitation:
+> * The Spotify app needs to be installed.
+> * Songs/Playlist can only be started asynchronously; it's not possible to detect when a song/playlist has ended
+>  * Therefore playing multiple songs/playlists in a loop is not working. You should set ``repeat`` to ``false``.
+> * Playback might not always be started automatically by the Spotify app.
+> * Playback is started using OS specific processes (e.g. ``cmd`` on Windows, ``osascript`` on macOS and ``dbus-send`` on Linux).<br/>This might not work with certain system setups.
+
 ## Installation
 [Installation guide for the latest release](https://github.com/xdev-software/music-maven-plugin/releases/latest#Installation)
 

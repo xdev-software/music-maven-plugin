@@ -18,25 +18,27 @@ package software.xdev.maven.music;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.maven.plugin.logging.Log;
 
-import software.xdev.maven.music.player.MP3OggPlayer;
 import software.xdev.maven.music.player.Player;
 import software.xdev.maven.music.sources.MusicSource;
 
 
+@SuppressWarnings("java:S6548")
 public final class PlayerManager
 {
-	private static final PlayerManager instance = new PlayerManager();
+	private static final PlayerManager INSTANCE = new PlayerManager();
 	
 	public static PlayerManager instance()
 	{
-		return instance;
+		return INSTANCE;
 	}
 	
-	private final List<Player<?>> availablePlayers = List.of(new MP3OggPlayer());
+	@SuppressWarnings({"java:S3740", "rawtypes"})
+	private final List<Player> availablePlayers;
 	private final Map<Class<? extends MusicSource>, Player<?>> sourcePlayers = new HashMap<>();
 	
 	private Player<?> lastActivePlayer;
@@ -45,8 +47,13 @@ public final class PlayerManager
 	
 	private PlayerManager()
 	{
+		this.availablePlayers = ServiceLoader.load(Player.class)
+			.stream()
+			.map(ServiceLoader.Provider::get)
+			.toList();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean play(final MusicSource source, final float defaultVolumeDB, final Log log)
 	{
 		this.playLock.lock();
