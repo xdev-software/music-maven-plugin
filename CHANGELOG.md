@@ -1,7 +1,7 @@
 # 2.0.0
 _This release contains breaking changes_
 
-* Redesigned the project to make it easier to implement custom extensions
+* Redesigned the project to make it easier to implement custom music sources / players
 * Added support for Spotify #41 @aboullaite
 
 New configuration format in ``pom.xml``:
