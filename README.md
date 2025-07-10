@@ -99,7 +99,7 @@ You can also play music from Spotify:
 > Requirements/Limitation:
 > * The Spotify app needs to be installed.
 > * Songs/Playlist can only be started asynchronously; it's not possible to detect when a song/playlist has ended
->  * Therefore playing multiple songs/playlists in a loop is not working. You should set ``repeat`` to ``false``.
+>    * Therefore playing multiple songs/playlists in a loop is not working. You should set ``repeat`` to ``false``.
 > * Playback might not always be started automatically by the Spotify app.
 > * Playback is started using OS specific processes (e.g. ``cmd`` on Windows, ``osascript`` on macOS and ``dbus-send`` on Linux).<br/>This might not work with certain system setups.
 
