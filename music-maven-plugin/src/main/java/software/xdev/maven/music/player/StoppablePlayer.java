@@ -13,23 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.maven.music;
+package software.xdev.maven.music.player;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugin.logging.Log;
+
+import software.xdev.maven.music.sources.MusicSource;
 
 
-@Mojo(
-	name = "stop-music",
-	threadSafe = true
-)
-public class StopMusicMojo extends AbstractMojo
+public abstract class StoppablePlayer<S extends MusicSource> implements Player<S>
 {
+	protected boolean externalStop;
+	
 	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException
+	public boolean play(final S source, final float defaultVolumeDB, final Log log)
 	{
-		PlayerManager.instance().stopActivePlayer();
+		try
+		{
+			return this.playInternal(source, defaultVolumeDB, log);
+		}
+		finally
+		{
+			this.externalStop = false;
+		}
+	}
+	
+	protected abstract boolean playInternal(final S source, final float defaultVolumeDB, final Log log);
+	
+	@Override
+	public void stop()
+	{
+		this.externalStop = true;
 	}
 }

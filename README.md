@@ -39,16 +39,22 @@ You can customize the music by adding other sources:
 ```xml
 <configuration>
     <sources>
-        <musicSource>
-            <uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>
-        </musicSource>
-        <musicSource>
+        <source>
+            <uri>
+                <uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>
+            </uri>
+        </source>
+        <source>
             <!-- Relative to project directory -->
-            <file>my_cool_music.mp3</file>
-        </musicSource>
-        <musicSource>
-            <classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
-        </musicSource>
+            <file>
+                <file>my_cool_music.mp3</file>
+            </file>
+        </source>
+        <source>
+            <classpath>
+                <classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
+            </classpath>
+        </source>
     </sources>
     <shuffle>true</shuffle>
 </configuration>
@@ -68,6 +74,34 @@ You can customize the music by adding other sources:
 > [!TIP]
 > If you want to convert to supported formats you can do so with [``ffmpeg``](https://www.ffmpeg.org/):<br/>
 > ``ffmpeg -i music.opus music.ogg``
+
+### Spotify
+
+You can also play music from Spotify:
+
+```xml
+<configuration>
+    <sources>
+        <source>
+            <spotify>
+                <uri>spotify:track:4cOdK2wGLETKBW3PvgPWqT</uri>
+                <!-- Alternatively you can also use a URL like -->
+                <!-- https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M -->
+            </spotify>
+        </source>
+    </sources>
+    <!-- Required, otherwise the song is started constantly in a loop -->
+    <repeat>false</repeat>
+</configuration>
+```
+
+> [!NOTE]
+> Requirements/Limitation:
+> * The Spotify app needs to be installed.
+> * Songs/Playlist can only be started asynchronously; it's not possible to detect when a song/playlist has ended
+>    * Therefore playing multiple songs/playlists in a loop is not working. You should set ``repeat`` to ``false``.
+> * Playback might not always be started automatically by the Spotify app.
+> * Playback is started using OS specific processes (e.g. ``cmd`` on Windows, ``osascript`` on macOS and ``dbus-send`` on Linux).<br/>This might not work with certain system setups.
 
 ## Installation
 [Installation guide for the latest release](https://github.com/xdev-software/music-maven-plugin/releases/latest#Installation)

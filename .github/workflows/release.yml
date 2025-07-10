@@ -51,7 +51,7 @@ jobs:
     needs: [check-code]
     timeout-minutes: 10
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
     steps:
     - uses: actions/checkout@v4
       
@@ -61,15 +61,7 @@ jobs:
         git config --global user.name "GitHub Actions"
   
     - name: Un-SNAP 
-      run: |
-        mvnwPath=$(readlink -f ./mvnw)
-        modules=("") # root
-        modules+=($(grep -oP '(?<=<module>)[^<]+' 'pom.xml'))
-        for i in "${modules[@]}"
-        do
-            echo "Processing $i/pom.xml"
-            (cd "$i" && $mvnwPath -B versions:set -DremoveSnapshot -DgenerateBackupPoms=false)
-        done
+      run: ./mvnw -B versions:set -DremoveSnapshot -DprocessAllModules -DgenerateBackupPoms=false
   
     - name: Get version
       id: version
@@ -88,8 +80,8 @@ jobs:
         git push origin --tags
     
     - name: Create Release
-      id: create_release
-      uses: shogo82148/actions-create-release@e5f206451d4ace2da9916d01f1aef279997f8659 # v1
+      id: create-release
+      uses: shogo82148/actions-create-release@4661dc54f7b4b564074e9fbf73884d960de569a3 # v1
       with:
         tag_name: v${{ steps.version.outputs.release }}
         release_name: v${{ steps.version.outputs.release }}
@@ -112,6 +104,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [prepare-release]
     timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v4
     
@@ -120,20 +115,34 @@ jobs:
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git pull
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with: # running setup-java overwrites the settings.xml
+        distribution: 'temurin'
+        java-version: '17'
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Only import once
     
+    - name: Publish to Central Portal
+      run: ../mvnw -B deploy -P publish -DskipTests -DaltDeploymentRepository=github::https://maven.pkg.github.com/${{ github.repository }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+      working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
+
     - name: Set up JDK
       uses: actions/setup-java@v4
       with: # running setup-java again overwrites the settings.xml
-        java-version: '17'
         distribution: 'temurin'
+        java-version: '17'
         server-id: sonatype-central-portal
         server-username: MAVEN_CENTRAL_USERNAME
         server-password: MAVEN_CENTRAL_TOKEN
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
-        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
     - name: Publish to Central Portal
-      run: ../mvnw -B deploy -P publish-sonatype-central-portal -DskipTests
+      run: ../mvnw -B deploy -P publish,publish-sonatype-central-portal -DskipTests
       env:
         MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
         MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
@@ -185,15 +194,7 @@ jobs:
         git pull
 
     - name: Inc Version and SNAP 
-      run: |
-        mvnwPath=$(readlink -f ./mvnw)
-        modules=("") # root
-        modules+=($(grep -oP '(?<=<module>)[^<]+' 'pom.xml'))
-        for i in "${modules[@]}"
-        do
-            echo "Processing $i/pom.xml"
-            (cd "$i" && $mvnwPath -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} -DgenerateBackupPoms=false -DnextSnapshot=true -DupdateMatchingVersions=false)
-        done
+      run: ./mvnw -B versions:set -DnextSnapshot -DprocessAllModules -DgenerateBackupPoms=false
 
     - name: Git Commit and Push
       run: |

@@ -34,6 +34,15 @@ body:
       required: true
 
   - type: textarea
+    id: description
+    attributes:
+      label: Description of the problem
+      description: |
+        Describe as exactly as possible what is not working.
+    validations:
+      required: true
+
+  - type: textarea
     id: steps-to-reproduce
     attributes:
       label: Steps to reproduce the bug
@@ -46,20 +55,6 @@ body:
         2. Do '...'
     validations:
       required: true
-
-  - type: textarea
-    id: expected-behavior
-    attributes:
-      label: Expected behavior
-      description: |
-        Tell us what you expect to happen.
-
-  - type: textarea
-    id: actual-behavior
-    attributes:
-      label: Actual behavior
-      description: |
-        Tell us what happens with the steps given above.
 
   - type: textarea
     id: additional-information

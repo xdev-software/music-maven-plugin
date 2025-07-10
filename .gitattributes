@@ -6,4 +6,4 @@
 
 # Force MVN Wrapper Linux files LF
 mvnw text eol=lf
-.mvn/wrapper/maven-wrapper.properties text eol=lf
+maven-wrapper.properties text eol=lf

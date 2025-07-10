@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.maven.music;
+package software.xdev.maven.music.player;
 
 import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Objects;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -31,21 +31,26 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.apache.maven.plugin.logging.Log;
+
+import software.xdev.maven.music.sources.mp3ogg.MP3OggMusicSource;
+
 
 // https://stackoverflow.com/a/17737483
 @SuppressWarnings("checkstyle:MagicNumber")
-public class MP3OggPlayer
+public class MP3OggPlayer extends StoppablePlayer<MP3OggMusicSource>
 {
-	private final ReentrantLock playingLock = new ReentrantLock();
-	private boolean externalStop;
-	
-	/**
-	 * @return <code>true</code> if the music was stopped externally
-	 */
-	public boolean play(final InputStream is, final float volumeDb)
+	@Override
+	public Class<MP3OggMusicSource> supportedMusicSourceType()
 	{
-		this.playingLock.lock();
-		try(final AudioInputStream in = getAudioInputStream(is))
+		return MP3OggMusicSource.class;
+	}
+	
+	@Override
+	protected boolean playInternal(final MP3OggMusicSource source, final float defaultVolumeDB, final Log log)
+	{
+		try(final InputStream is = source.openInputStream();
+			final AudioInputStream in = getAudioInputStream(is))
 		{
 			final AudioFormat outFormat = this.getOutFormat(in.getFormat());
 			final Info info = new Info(SourceDataLine.class, outFormat);
@@ -61,7 +66,9 @@ public class MP3OggPlayer
 					if(line.getControl(FloatControl.Type.MASTER_GAIN) instanceof final FloatControl floatControl)
 					{
 						floatControl.setValue(Math.max(
-							Math.min(floatControl.getMaximum(), volumeDb),
+							Math.min(
+								floatControl.getMaximum(),
+								Objects.requireNonNullElse(source.getVolumeDB(), defaultVolumeDB)),
 							floatControl.getMinimum()));
 					}
 					this.stream(getAudioInputStream(outFormat, in), line);
@@ -76,11 +83,6 @@ public class MP3OggPlayer
 					| IOException e)
 		{
 			throw new IllegalStateException(e);
-		}
-		finally
-		{
-			this.externalStop = false;
-			this.playingLock.unlock();
 		}
 	}
 	
@@ -99,26 +101,6 @@ public class MP3OggPlayer
 		for(int n = 0; n != -1 && !this.externalStop; n = in.read(buffer, 0, buffer.length))
 		{
 			line.write(buffer, 0, n);
-		}
-	}
-	
-	public void stopAndWaitUntilFinished()
-	{
-		this.stop();
-		this.waitUntilPlayingFinished();
-	}
-	
-	protected void stop()
-	{
-		this.externalStop = true;
-	}
-	
-	protected void waitUntilPlayingFinished()
-	{
-		if(this.playingLock.isLocked())
-		{
-			this.playingLock.lock();
-			this.playingLock.unlock();
 		}
 	}
 }

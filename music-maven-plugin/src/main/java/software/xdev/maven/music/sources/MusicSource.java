@@ -13,29 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.maven.music;
+package software.xdev.maven.music.sources;
 
-import java.lang.ref.WeakReference;
-import java.util.Optional;
-
-
-public final class PlayerInstance
+public interface MusicSource
 {
-	private static WeakReference<MP3OggPlayer> instance;
-	
-	public static MP3OggPlayer set(final MP3OggPlayer player)
-	{
-		instance = new WeakReference<>(player);
-		return player;
-	}
-	
-	public static Optional<MP3OggPlayer> get()
-	{
-		return Optional.ofNullable(instance)
-			.map(WeakReference::get);
-	}
-	
-	private PlayerInstance()
-	{
-	}
 }
