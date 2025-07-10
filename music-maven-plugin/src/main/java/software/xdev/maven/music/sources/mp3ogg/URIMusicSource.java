@@ -13,23 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.maven.music;
+package software.xdev.maven.music.sources.mp3ogg;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.net.URI;
 
 
-@Mojo(
-	name = "stop-music",
-	threadSafe = true
-)
-public class StopMusicMojo extends AbstractMojo
+public class URIMusicSource extends MP3OggMusicSource
 {
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException
+	private String uri;
+	
+	public String getUri()
 	{
-		PlayerManager.instance().stopActivePlayer();
+		return this.uri;
+	}
+	
+	public void setUri(final String uri)
+	{
+		this.uri = uri;
+	}
+	
+	@Override
+	public InputStream openInputStream()
+	{
+		try
+		{
+			return URI.create(this.getUri()).toURL().openStream();
+		}
+		catch(final IOException e)
+		{
+			throw new UncheckedIOException(e);
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		return this.getUri();
 	}
 }

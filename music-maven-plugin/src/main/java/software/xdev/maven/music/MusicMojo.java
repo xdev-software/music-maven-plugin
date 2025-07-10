@@ -15,11 +15,9 @@
  */
 package software.xdev.maven.music;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -28,6 +26,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+
+import software.xdev.maven.music.sources.WrappedMusicSource;
+import software.xdev.maven.music.sources.mp3ogg.ClassPathMusicSource;
 
 
 @Mojo(
@@ -43,8 +44,8 @@ public class MusicMojo extends AbstractMojo
 	protected boolean skip;
 	
 	@Parameter
-	protected List<MusicSource> sources = new ArrayList<>(List.of(
-		MusicSource.fromClassPath("/default/Local_Forecast_-_Elevator.ogg")
+	protected List<WrappedMusicSource> sources = new ArrayList<>(List.of(
+		new WrappedMusicSource(new ClassPathMusicSource("/default/Local_Forecast_-_Elevator.ogg"))
 	));
 	
 	/**
@@ -127,35 +128,26 @@ public class MusicMojo extends AbstractMojo
 	{
 		try
 		{
-			final List<MusicSource> sourcesWorkingCopy = new ArrayList<>(this.sources);
+			final List<WrappedMusicSource> sourcesWorkingCopy = new ArrayList<>(this.sources);
 			if(this.shuffle)
 			{
 				Collections.shuffle(sourcesWorkingCopy);
 			}
 			
-			final MP3OggPlayer player = PlayerInstance.get()
-				.map(p -> {
-					this.getLog().debug("Stopping music");
-					p.stopAndWaitUntilFinished();
-					return p;
-				})
-				.orElseGet(() -> PlayerInstance.set(new MP3OggPlayer()));
+			PlayerManager.instance().stopActivePlayer();
 			
 			boolean wasStopped = false;
 			do
 			{
-				for(final MusicSource source : sourcesWorkingCopy)
+				for(final WrappedMusicSource source : sourcesWorkingCopy)
 				{
-					this.getLog().info("[🎵] Now playing: " + source);
-					try(final InputStream is = source.openInputStream())
+					if(PlayerManager.instance().play(
+						source.getMusicSource(),
+						this.defaultVolumeDB,
+						this.getLog()::info))
 					{
-						if(player.play(
-							is,
-							Optional.ofNullable(source.getVolumeDB()).orElse(this.defaultVolumeDB)))
-						{
-							wasStopped = true;
-							break;
-						}
+						wasStopped = true;
+						break;
 					}
 				}
 			}

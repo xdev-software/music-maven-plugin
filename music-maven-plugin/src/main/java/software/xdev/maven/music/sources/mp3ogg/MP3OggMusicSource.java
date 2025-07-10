@@ -13,23 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.maven.music;
+package software.xdev.maven.music.sources.mp3ogg;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
+import java.io.InputStream;
+
+import software.xdev.maven.music.sources.MusicSource;
 
 
-@Mojo(
-	name = "stop-music",
-	threadSafe = true
-)
-public class StopMusicMojo extends AbstractMojo
+public abstract class MP3OggMusicSource implements MusicSource
 {
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException
+	private Float volumeDB;
+	
+	public void setVolumeDB(final Float volumeDB)
 	{
-		PlayerManager.instance().stopActivePlayer();
+		this.volumeDB = volumeDB;
 	}
+	
+	public Float getVolumeDB()
+	{
+		return this.volumeDB;
+	}
+	
+	public abstract InputStream openInputStream();
 }

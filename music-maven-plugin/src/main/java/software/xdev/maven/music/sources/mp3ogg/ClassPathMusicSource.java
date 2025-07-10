@@ -13,23 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.maven.music;
+package software.xdev.maven.music.sources.mp3ogg;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
+import java.io.InputStream;
 
 
-@Mojo(
-	name = "stop-music",
-	threadSafe = true
-)
-public class StopMusicMojo extends AbstractMojo
+public class ClassPathMusicSource extends MP3OggMusicSource
 {
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException
+	private String classpath;
+	
+	public ClassPathMusicSource()
 	{
-		PlayerManager.instance().stopActivePlayer();
+	}
+	
+	public ClassPathMusicSource(final String classpath)
+	{
+		this.classpath = classpath;
+	}
+	
+	public String getClasspath()
+	{
+		return this.classpath;
+	}
+	
+	public void setClasspath(final String classpath)
+	{
+		this.classpath = classpath;
+	}
+	
+	@Override
+	public InputStream openInputStream()
+	{
+		return this.getClass().getResourceAsStream(this.getClasspath());
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "[classpath]:" + this.getClasspath();
 	}
 }

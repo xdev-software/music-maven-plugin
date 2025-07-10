@@ -39,16 +39,22 @@ You can customize the music by adding other sources:
 ```xml
 <configuration>
     <sources>
-        <musicSource>
-            <uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>
-        </musicSource>
-        <musicSource>
+        <source>
+            <uri>
+                <uri>https://incompetech.com/music/royalty-free/mp3-royaltyfree/Corncob.mp3</uri>
+            </uri>
+        </source>
+        <source>
             <!-- Relative to project directory -->
-            <file>my_cool_music.mp3</file>
-        </musicSource>
-        <musicSource>
-            <classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
-        </musicSource>
+            <file>
+                <file>my_cool_music.mp3</file>
+            </file>
+        </source>
+        <source>
+            <classpath>
+                <classpath>/default/Andrew_Codeman_-_03_-_Mussels_short_version.ogg</classpath>
+            </classpath>
+        </source>
     </sources>
     <shuffle>true</shuffle>
 </configuration>
