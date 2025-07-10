@@ -38,6 +38,7 @@ public class SpotifyPlayer implements Player<SpotifyMusicSource>
 		return SpotifyMusicSource.class;
 	}
 	
+	@SuppressWarnings("java:S4036")
 	@Override
 	public boolean play(final SpotifyMusicSource source, final float defaultVolumeDB, final Log log)
 	{
