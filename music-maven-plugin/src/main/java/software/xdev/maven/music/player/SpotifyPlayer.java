@@ -79,11 +79,11 @@ public class SpotifyPlayer implements Player<SpotifyMusicSource>
 					"Failed to play Spotify URI '%s'. Exit code: %d.",
 					uri,
 					exitCode);
-				if(!stdErr.trim().isEmpty())
+				if(!stdErr.isBlank())
 				{
 					errorMessage += " Error: " + stdErr;
 				}
-				if(!stdOut.trim().isEmpty())
+				if(!stdOut.isBlank())
 				{
 					errorMessage += " Output: " + stdOut;
 				}
