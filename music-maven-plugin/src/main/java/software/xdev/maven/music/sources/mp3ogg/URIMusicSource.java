@@ -51,6 +51,6 @@ public class URIMusicSource extends MP3OggMusicSource
 	@Override
 	public String toString()
 	{
-		return this.getUri();
+		return "[uri]: " + this.getUri();
 	}
 }

@@ -144,7 +144,7 @@ public class MusicMojo extends AbstractMojo
 					if(PlayerManager.instance().play(
 						source.getMusicSource(),
 						this.defaultVolumeDB,
-						this.getLog()::info))
+						this.getLog()))
 					{
 						wasStopped = true;
 						break;

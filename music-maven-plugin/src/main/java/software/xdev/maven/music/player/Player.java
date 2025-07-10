@@ -15,6 +15,8 @@
  */
 package software.xdev.maven.music.player;
 
+import org.apache.maven.plugin.logging.Log;
+
 import software.xdev.maven.music.sources.MusicSource;
 
 
@@ -23,15 +25,15 @@ public interface Player<S extends MusicSource>
 	Class<S> supportedMusicSourceType();
 	
 	@SuppressWarnings("unchecked")
-	default boolean play(final Object source, final float defaultVolumeDB)
+	default boolean play(final Object source, final float defaultVolumeDB, final Log log)
 	{
-		return this.play((S)source, defaultVolumeDB);
+		return this.play((S)source, defaultVolumeDB, log);
 	}
 	
 	/**
 	 * @return <code>true</code> if the music was stopped externally
 	 */
-	boolean play(S source, float defaultVolumeDB);
+	boolean play(S source, float defaultVolumeDB, Log log);
 	
 	void stop();
 }

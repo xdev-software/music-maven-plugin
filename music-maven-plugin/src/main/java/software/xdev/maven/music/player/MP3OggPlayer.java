@@ -31,15 +31,15 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.apache.maven.plugin.logging.Log;
+
 import software.xdev.maven.music.sources.mp3ogg.MP3OggMusicSource;
 
 
 // https://stackoverflow.com/a/17737483
 @SuppressWarnings("checkstyle:MagicNumber")
-public class MP3OggPlayer implements Player<MP3OggMusicSource>
+public class MP3OggPlayer extends StoppablePlayer<MP3OggMusicSource>
 {
-	private boolean externalStop;
-	
 	@Override
 	public Class<MP3OggMusicSource> supportedMusicSourceType()
 	{
@@ -47,7 +47,7 @@ public class MP3OggPlayer implements Player<MP3OggMusicSource>
 	}
 	
 	@Override
-	public boolean play(final MP3OggMusicSource source, final float defaultVolumeDB)
+	protected boolean playInternal(final MP3OggMusicSource source, final float defaultVolumeDB, final Log log)
 	{
 		try(final InputStream is = source.openInputStream();
 			final AudioInputStream in = getAudioInputStream(is))
@@ -84,10 +84,6 @@ public class MP3OggPlayer implements Player<MP3OggMusicSource>
 		{
 			throw new IllegalStateException(e);
 		}
-		finally
-		{
-			this.externalStop = false;
-		}
 	}
 	
 	private AudioFormat getOutFormat(final AudioFormat inFormat)
@@ -106,11 +102,5 @@ public class MP3OggPlayer implements Player<MP3OggMusicSource>
 		{
 			line.write(buffer, 0, n);
 		}
-	}
-	
-	@Override
-	public void stop()
-	{
-		this.externalStop = true;
 	}
 }

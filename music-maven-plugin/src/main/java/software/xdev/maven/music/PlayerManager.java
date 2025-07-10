@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
+
+import org.apache.maven.plugin.logging.Log;
 
 import software.xdev.maven.music.player.MP3OggPlayer;
 import software.xdev.maven.music.player.Player;
@@ -46,7 +47,7 @@ public final class PlayerManager
 	{
 	}
 	
-	public boolean play(final MusicSource source, final float defaultVolumeDB, final Consumer<String> log)
+	public boolean play(final MusicSource source, final float defaultVolumeDB, final Log log)
 	{
 		this.playLock.lock();
 		
@@ -59,8 +60,8 @@ public final class PlayerManager
 					.findFirst()
 					.orElseThrow());
 			this.lastActivePlayer = player;
-			log.accept("[🎵] Now playing: " + source);
-			return player.play(source, defaultVolumeDB);
+			log.info("[🎵] Now playing: " + source);
+			return player.play(source, defaultVolumeDB, log);
 		}
 		finally
 		{
