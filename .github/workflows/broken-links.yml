@@ -31,13 +31,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           
       - name: Close issue if everything is fine
-        if: env.lychee_exit_code == 0 && steps.find-issue.outputs.number != ''
+        if: steps.lychee.outputs.exit_code == 0 && steps.find-issue.outputs.number != ''
         run: gh issue close -r 'not planned' ${{ steps.find-issue.outputs.number }}
         env:
           GH_TOKEN: ${{ github.token }}
 
       - name: Create Issue From File
-        if: env.lychee_exit_code != 0
+        if: steps.lychee.outputs.exit_code != 0
         uses: peter-evans/create-issue-from-file@e8ef132d6df98ed982188e460ebb3b5d4ef3a9cd # v5
         with:
           issue-number: ${{ steps.find-issue.outputs.number }}

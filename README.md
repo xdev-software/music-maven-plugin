@@ -1,6 +1,5 @@
 [![Latest version](https://img.shields.io/maven-central/v/software.xdev/music-maven-plugin?logo=apache%20maven)](https://mvnrepository.com/artifact/software.xdev/music-maven-plugin)
 [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/music-maven-plugin/check-build.yml?branch=develop)](https://github.com/xdev-software/music-maven-plugin/actions/workflows/check-build.yml?query=branch%3Adevelop)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xdev-software_music-maven-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=xdev-software_music-maven-plugin)
 
 # music-maven-plugin
 

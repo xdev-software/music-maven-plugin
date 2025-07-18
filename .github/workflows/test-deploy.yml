@@ -10,9 +10,6 @@ jobs:
   publish-maven:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    permissions:
-      contents: read
-      packages: write
     steps:
     - uses: actions/checkout@v4
 
@@ -21,14 +18,16 @@ jobs:
       with: # running setup-java overwrites the settings.xml
         distribution: 'temurin'
         java-version: '17'
+        server-id: github-central
+        server-password: PACKAGES_CENTRAL_TOKEN
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Only import once
     
-    - name: Publish to GitHub Packages
-      run: ../mvnw -B deploy -P publish -DskipTests -DaltDeploymentRepository=github::https://maven.pkg.github.com/${{ github.repository }}
+    - name: Publish to GitHub Packages Central
+      run: ../mvnw -B deploy -P publish -DskipTests -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central
       working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PACKAGES_CENTRAL_TOKEN: ${{ secrets.PACKAGES_CENTRAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
     
     - name: Set up JDK
