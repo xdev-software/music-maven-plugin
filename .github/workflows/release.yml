@@ -91,7 +91,7 @@ jobs:
 
     - name: Create Release
       id: create-release
-      uses: shogo82148/actions-create-release@4661dc54f7b4b564074e9fbf73884d960de569a3 # v1
+      uses: shogo82148/actions-create-release@7b89596097b26731bda0852f1504f813499079ee # v1
       with:
         tag_name: v${{ steps.version.outputs.release }}
         release_name: v${{ steps.version.outputs.release }}
