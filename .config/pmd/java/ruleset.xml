@@ -204,7 +204,7 @@
 
 	<rule name="AvoidStringBuilderOrBuffer"
 		language="java"
-		message="StringBuilder/ should not be used"
+		message="StringBuilder/StringBuffer should not be used"
 		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
 		<description>
 			Usually all cases where `StringBuilder` (or the outdated `StringBuffer`) is used are either due to confusing (legacy) logic or may be replaced by a simpler string concatenation.
