@@ -18,6 +18,8 @@ package software.xdev.maven.music;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -85,7 +87,7 @@ public class MusicMojo extends AbstractMojo
 	@Parameter
 	protected float defaultVolumeDB = -20.0f;
 	
-	@SuppressWarnings("java:S2142")
+	@SuppressWarnings({"java:S2142", "PMD.AvoidUnmanagedThreads"})
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException
 	{
