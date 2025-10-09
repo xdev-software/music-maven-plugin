@@ -19,7 +19,7 @@ We also encourage you to read the [contribution instructions by GitHub](https://
 ### Software Requirements
 You should have the following things installed:
 * Git
-* Java 21 - should be as unmodified as possible (Recommended: [Eclipse Adoptium](https://adoptium.net/temurin/releases/))
+* Java 25 - should be as unmodified as possible (Recommended: [Eclipse Adoptium](https://adoptium.net/temurin/releases/))
 * Maven (Note that the [Maven Wrapper](https://maven.apache.org/wrapper/) is shipped with the repo)
 
 ### Recommended setup

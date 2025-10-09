@@ -2,7 +2,7 @@
 <ruleset name="Default"
 		 xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+		 xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.github.io/ruleset_2_0_0.xsd">
 
 	<description>
 		This ruleset checks the code for discouraged programming constructs.
@@ -11,7 +11,6 @@
 	<!-- Only rules that don't overlap with CheckStyle! -->
 
 	<rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
-	<rule ref="category/java/bestpractices.xml/AvoidStringBufferField"/>
 	<rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
 	<rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
 	<rule ref="category/java/bestpractices.xml/ExhaustiveSwitchHasDefault"/>
@@ -153,6 +152,8 @@
 	<rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
 	<rule ref="category/java/errorprone.xml/MoreThanOneLogger"/>
 	<rule ref="category/java/errorprone.xml/NonStaticInitializer"/>
+	<rule ref="category/java/errorprone.xml/ReplaceJavaUtilCalendar"/>
+	<rule ref="category/java/errorprone.xml/ReplaceJavaUtilDate"/>
 	<rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock"/>
 	<rule ref="category/java/errorprone.xml/SingletonClassReturningNewInstance"/>
 	<rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
@@ -184,6 +185,9 @@
 		<!-- Handled by checkstyle -->
 		<exclude name="RedundantFieldInitializer"/>
 
+		<!-- Not in use and resource intensive -->
+		<exclude name="UseIOStreamsWithApacheCommonsFileItem"/>
+
 		<!-- Nowadays optimized by compiler; No code bloating needed -->
 		<exclude name="UseStringBufferForStringAppends"/>
 	</rule>
@@ -196,6 +200,33 @@
 	</rule>
 
 	<rule ref="category/java/security.xml"/>
+
+
+	<rule name="AvoidStringBuilderOrBuffer"
+		language="java"
+		message="StringBuilder/ should not be used"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Usually all cases where `StringBuilder` (or the outdated `StringBuffer`) is used are either due to confusing (legacy) logic or may be replaced by a simpler string concatenation.
+
+			Solution:
+			* Do not use `StringBuffer` because it's thread-safe and usually this is not needed
+			* If `StringBuilder` is only used in a simple method (like `toString`) and is effectively inlined: Use a simpler string concatenation (`"a" + x + "b"`). This will be optimized by the Java compiler internally.
+			* In all other cases: 
+			  * Check what is happening and if it makes ANY sense! If for example a CSV file is built here consider using a proper library instead!
+			  * Abstract the Strings into a DTO, join them together using a collection (or `StringJoiner`) or use Java's Streaming API instead
+		</description>
+		<priority>3</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//ConstructorCall/ClassType[pmd-java:typeIs('java.lang.StringBuffer') or pmd-java:typeIs('java.lang.StringBuilder')]
+]]>
+				</value>
+			</property>
+		</properties>
+	</rule>
 
 	<rule name="AvoidSystemSetterCall"
 		language="java"
@@ -212,7 +243,7 @@
 		<properties>
 			<property name="xpath">
 				<value>
-					<![CDATA[
+<![CDATA[
 //MethodCall[starts-with(@MethodName,'set')]/TypeExpression[pmd-java:typeIsExactly('java.lang.System')]
 ]]>
 				</value>
@@ -234,7 +265,7 @@
 		<properties>
 			<property name="xpath">
 				<value>
-					<![CDATA[
+<![CDATA[
 //MethodDeclaration[pmd-java:hasAnnotation('jakarta.annotation.PostConstruct')]
 ]]>
 				</value>
@@ -255,7 +286,7 @@
 		<properties>
 			<property name="xpath">
 				<value>
-					<![CDATA[
+<![CDATA[
 //MethodDeclaration[pmd-java:hasAnnotation('jakarta.annotation.PreDestroy')]
 ]]>
 				</value>
@@ -277,7 +308,7 @@
 		<properties>
 			<property name="xpath">
 				<value>
-					<![CDATA[
+<![CDATA[
 //MethodCall[pmd-java:matchesSig('java.lang.Thread#start()') or pmd-java:matchesSig('java.lang.Thread#startVirtualThread(java.lang.Runnable)') or pmd-java:matchesSig('java.lang.Thread$Builder#start(java.lang.Runnable)')]
 ]]>
 				</value>
@@ -301,12 +332,740 @@
 		<properties>
 			<property name="xpath">
 				<value>
-					<![CDATA[
+<![CDATA[
 //ClassDeclaration[@Interface = false()]/ClassBody/FieldDeclaration/VariableDeclarator/VariableId[@Name='serialVersionUID'] |
 //ConstructorCall/ClassType[pmd-java:typeIsExactly('java.io.ObjectInputStream') or pmd-java:typeIsExactly('java.io.ObjectOutputStream')]
 ]]>
 				</value>
 			</property>
 		</properties>
+	</rule>
+
+	<!-- Vaadin -->
+	<!-- For future reference: This should maybe be extracted into a ruleset if there are more Vaadin specific rules -->
+	<rule name="VaadinNativeHTMLIsUnsafe"
+		language="java"
+		message="Unescaped native HTML is unsafe and will result in XSS vulnerabilities"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule" >
+		<description>
+			Do not use native HTML! Use Vaadin layouts and components to create required structure.
+			If you are 100% sure that you escaped the value properly and you have no better options you can suppress this.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//ConstructorCall[pmd-java:typeIs('com.vaadin.flow.component.Html')] |
+//MethodCall[@MethodName='setAttribute' and //ImportDeclaration[starts-with(@PackageName,'com.vaadin')]]/ArgumentList/StringLiteral[1][contains(lower-case(@Image),'html')]
+]]>
+				</value>
+			</property>
+		</properties>
+	</rule>
+
+
+	<!-- Rules from JPinPoint with slight modifications -->
+	<!-- https://github.com/jborgers/PMD-jPinpoint-rules -->
+	<!-- Licensed under Apache-2.0 -->
+	<rule name="AvoidDecimalAndChoiceFormatAsField"
+		language="java"
+		message="Avoid using DecimalFormat or ChoiceFormat as field since it is thread-unsafe"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			java.text.NumberFormat: DecimalFormat and ChoiceFormat are thread-unsafe.
+
+			Solution: Create a new local one when needed in a method.
+		</description>
+		<priority>1</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//FieldDeclaration/ClassType[pmd-java:typeIs('java.text.NumberFormat')]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+public class Foo {
+	public static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("###.###"); // bad
+
+	public void bar() {
+		NumberFormat format = new DecimalFormat("###.###"); // good
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidImplicitlyRecompilingRegex"
+		language="java"
+		message="Detected possible resource expensive implicit regex pattern compilation"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			A regular expression is compiled implicitly on every invocation. 
+			Problem: This can be (CPU) expensive, depending on the length of the regular expression.
+
+			Solution: Compile the regex pattern only once and assign it to a private static final Pattern field.
+			java.util.Pattern objects are thread-safe, so they can be shared among threads.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+(:- method calls for non-short regex literals and used fields defined with non-short regex literal, or not defined as field -:)
+//MethodDeclaration//MethodCall[pmd-java:matchesSig('java.lang.String#replaceAll(java.lang.String,java.lang.String)')
+	or pmd-java:matchesSig('java.lang.String#replaceFirst(java.lang.String,java.lang.String)')
+	or pmd-java:matchesSig('java.util.regex.Pattern#matches(java.lang.String,java.lang.CharSequence)')
+	or pmd-java:matchesSig('java.lang.String#split(java.lang.String)')
+	or pmd-java:matchesSig('java.lang.String#matches(java.lang.String)')
+	or pmd-java:matchesSig('java.nio.file.FileSystem#getPathMatcher(java.lang.String)')
+]
+/ArgumentList/*[1][(self::StringLiteral and string-length(@Image) > 5 and
+(matches(@Image, '[\.\$\|\(\)\[\]\{\}\^\?\*\+\\]+')))
+or
+self::VariableAccess and @Name=ancestor::ClassBody[1]/FieldDeclaration/VariableDeclarator[StringLiteral[string-length(@Image) > 5 and
+(matches(@Image, '[\.\$\|\(\)\[\]\{\}\^\?\*\+\\]+'))] or not(StringLiteral)]/VariableId/@Name]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+String bad_replaceInnerLineBreakBySpace() {
+	return text.replaceAll("([^\\.\\n])\\n", "$1 "); // bad
+}
+
+private static final Pattern INNER_LINE_BREAK_PATTERN = Pattern.compile("([^\\.\\n])\\n"); // good
+
+String good_replaceInnerLineBreakBySpace() {
+	return INNER_LINE_BREAK_PATTERN.matcher(text).replaceAll("$1 "); // good
+}
+]]>
+		</example>
+	</rule>
+
+	<!-- CHANGED: Only match parameter-less constructor (Optimization) -->
+	<rule name="AvoidInMemoryStreamingDefaultConstructor"
+		language="java"
+		message="Default buffer capacity is used which usually needs expensive expansions"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			The default constructor of ByteArrayOutputStream creates a 32 bytes initial capacity and for StringWriter 16 chars. 
+			Such a small buffer as capacity usually needs several expensive expansions.
+
+			Solution: Explicitly declared the buffer size so that an expansion is not needed in most cases. 
+			Typically much larger than 32, e.g. 4096.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//ConstructorCall[pmd-java:matchesSig('java.io.ByteArrayOutputStream#new()') or pmd-java:matchesSig('java.io.StringWriter#new()')]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+class Bad {
+	public static void bad()  {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(); //bad
+		StringWriter sw = new StringWriter(); //bad
+		baos = new ByteArrayOutputStream(32); //bad - not larger than default
+	}
+}
+class Good {
+	public static void good()  {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(8192); // 8 kiB
+		StringWriter sw = new StringWriter(2048);
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidReStreamingEnumValues"
+		language="java"
+		message="Avoid re-streaming enum values to find a value by a field"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			The time to find element is O(n); n = the number of enum values. 
+			This identical processing is executed for every call. 
+			Considered problematic when `n > 3`.
+
+			Solution: Use a static field-to-enum-value Map. Access time is O(1), provided the hashCode is well-defined.
+			Implement a fromString method to provide the reverse conversion by using the map.
+		</description>
+		<priority>3</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//EnumDeclaration/EnumBody[count(EnumConstant) > 3]//MethodDeclaration/Block
+	//MethodCall[pmd-java:matchesSig('java.util.stream.Stream#findFirst()') or pmd-java:matchesSig('java.util.stream.Stream#findAny()')]
+	[//MethodCall[pmd-java:matchesSig('java.util.stream.Stream#of(_)') or pmd-java:matchesSig('java.util.Arrays#stream(_)')]
+	[ArgumentList/MethodCall[pmd-java:matchesSig('_#values()')]]]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+// BAD
+public enum Fruit {
+	APPLE("apple"),
+	ORANGE("orange"),
+	BANANA("banana"),
+	KIWI("kiwi");
+
+	private final String name;
+
+	Fruit(String name) { this.name = name; }
+	@Override public String toString() { return name; }
+	public static Optional<Fruit> fromString(String name) {
+		return Stream.of(values()).filter(v -> v.toString().equals(name)).findAny(); // bad: iterates for every call, O(n) access time
+	}
+}
+
+Usage: `Fruit f = Fruit.fromString("banana");`
+
+// GOOD
+public enum Fruit {
+	APPLE("apple"),
+	ORANGE("orange"),
+	BANANA("banana"),
+	KIWI("kiwi");
+
+	private static final Map<String, Fruit> nameToValue =
+			Stream.of(values()).collect(toMap(Object::toString, v -> v));
+	private final String name;
+
+	Fruit(String name) { this.name = name; }
+	@Override public String toString() { return name; }
+	public static Optional<Fruit> fromString(String name) {
+		return Optional.ofNullable(nameToValue.get(name)); // good, get from Map, O(1) access time
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidRecompilingPatterns"
+		language="java"
+		message="Pattern.compile is used in a method. Compiling a regex pattern can be expensive, make it a static final field."
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			A regular expression is compiled on every invocation. 
+			Problem: this can be expensive, depending on the length of the regular expression.
+
+			Solution: Usually a pattern is a literal, not dynamic and can be compiled only once. Assign it to a private static field. 
+			java.util.Pattern objects are thread-safe so they can be shared among threads.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodDeclaration//MethodCall[pmd-java:matchesSig('java.util.regex.Pattern#compile(java.lang.String)')
+and not(.//VariableAccess[@Name = ancestor::MethodDeclaration//FormalParameter/VariableId/@Name])]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+class Bad {
+public static final String STR_PAT1 = "[A-Z][a-z]+";
+
+public static void bad() {
+	Pattern p1 = Pattern.compile(STR_PAT1); // bad
+	Pattern p2 = Pattern.compile("(?=\\p{Lu})"); // bad
+	boolean b = p1.matcher("Start ").matches();
+}
+}
+class Good {
+public static final Pattern PAT1 = Pattern.compile("[A-Z][a-z]+");
+public static final Pattern PAT2 = Pattern.compile("(?=\\p{Lu})");
+
+public static void good() {
+	boolean b = PAT1.matcher("Start ").matches();
+}
+}
+]]>
+		</example>
+	</rule>
+
+	<!-- CHANGED: Removed joda time -->
+	<rule name="AvoidRecreatingDateTimeFormatter"
+		language="java"
+		message="Avoid expensive recreation of DateTimeFormatter"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Recreating a DateTimeFormatter is relatively expensive.
+
+			Solution: Java 8+ java.time.DateTimeFormatter is thread-safe and can be shared among threads. 
+			Create the formatter from a pattern only once, to initialize a static final field.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//FieldDeclaration
+[ClassType[pmd-java:typeIs('java.time.format.DateTimeFormatter')]]
+[(not(pmd-java:modifiers() = 'static') and VariableDeclarator[@Initializer=true()]) or not(pmd-java:modifiers() = 'final')]
+|
+//(MethodDeclaration|ConstructorDeclaration)//MethodCall[((pmd-java:matchesSig('java.time.format.DateTimeFormatter#ofPattern(_)'))
+and not(ArgumentList/VariableAccess/@Name = ancestor::Block/..//FormalParameter/VariableId/@Name))
+or pmd-java:matchesSig('java.time.format.DateTimeFormatterBuilder#toFormatter()')
+or pmd-java:matchesSig('java.time.format.DateTimeFormatterBuilder#toFormatter(_)')
+]
+]]>
+				</value>
+			</property>
+		</properties>
+	</rule>
+
+	<rule name="AvoidRecreatingSecurityProviders"
+		language="java"
+		message="Avoid expensive recreation of security providers"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Creating a security provider is expensive because of loading of algorithms and other classes. 
+			Additionally, it uses synchronized which leads to lock contention when used with multiple threads.
+
+			Solution: This only needs to happen once in the JVM lifetime, because once loaded the provider is typically available from the Security class. 
+			Create the security provider only once: Only in case when it's not yet available from the Security class.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodDeclaration
+[not((@Name='main' and @Static=true())or ModifierList/Annotation/@SimpleName='PostConstruct'
+	or .//IfStatement//InfixExpression
+		[@Operator='=='][VariableAccess[pmd-java:typeIs('java.security.Provider')] and NullLiteral]
+)]
+//ConstructorCall[pmd-java:typeIs('java.security.Provider') or pmd-java:typeIs('org.bouncycastle.jce.provider.BouncyCastleProvider')]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+import java.security.*;
+import javax.crypto.*;
+import org.bouncycastle.jce.provider.*;
+
+class Foo {
+	public Cipher initBlowfishBad() throws GeneralSecurityException {
+		Security.addProvider(new BouncyCastleProvider()); // bad
+		// build a Cipher
+	}
+
+	public Cipher initBlowfishGood() throws GeneralSecurityException {
+		Provider bouncyCastleProvider = Security.getProvider(BouncyCastleProvider.PROVIDER_NAME);
+		if (bouncyCastleProvider == null) {
+			bouncyCastleProvider = new BouncyCastleProvider();
+			Security.addProvider(bouncyCastleProvider);
+		}
+		// build a Cipher
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidReflectionInToStringAndHashCode"
+		language="java"
+		message="Expensive Reflection is used"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Reflection is relatively expensive.
+
+			Solution: Avoid reflection. Use the non-reflective, explicit way like generation by IDE.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodCall[starts-with(@MethodName, 'reflection')][(TypeExpression|ConstructorCall)
+	[pmd-java:typeIs('org.apache.commons.lang3.builder.EqualsBuilder') or pmd-java:typeIs('org.apache.commons.lang3.builder.HashCodeBuilder')]]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+class Bad {
+	private int state;
+
+	public boolean equals(Object o) {
+		return EqualsBuilder.reflectionEquals(o, this); // bad
+	}
+}
+
+class Good {
+	private int state;
+
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Good)) return false;
+		return new EqualsBuilder().append(((Good)o).state, state).isEquals();
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidSimpleDateFormat"
+		language="java"
+		message="SimpleDateFormat is used. Since it is thread-unsafe, it needs expensive recreation."
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			java.util.SimpleDateFormat is thread-unsafe.
+			The usual solution is to create a new one when needed in a method.
+			Creating SimpleDateFormat is relatively expensive.
+
+			Solution: Use java.time.DateTimeFormatter. These classes are immutable, thus thread-safe and can be made static.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//ConstructorCall/ClassType[pmd-java:typeIs('java.text.SimpleDateFormat')
+and not ((ancestor::LocalVariableDeclaration/following-sibling::ExpressionStatement/MethodCall|ancestor::MethodCall)
+	[@MethodName='setDateFormat']/VariableAccess[pmd-java:typeIs('com.fasterxml.jackson.databind.ObjectMapper')
+	or pmd-java:typeIs('com.fasterxml.jackson.dataformat.xml.XmlMapper')])
+]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+public class Foo {
+	private String toKeyBad(final Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //bad
+		return formatter.format(date);
+	}
+	private String toKeyGood(final LocalDate localDate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //good
+		return formatter.format(localDate);
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidCommonPoolForBlockingCalls" 
+		language="java"
+		message="Avoid the ForkJoinPool::commonPool used in parallelStream for blocking calls"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Blocking calls, for instance remote calls, may exhaust the common pool for some time thereby blocking all other use of the common pool.
+			In addition, nested use of the common pool can lead to deadlock. Do not use the common pool for blocking calls. 
+			The parallelStream() call uses the common pool.
+
+			Solution: Use a dedicated thread pool with enough threads to get proper parallelism.
+			The number of threads in the common pool is equal to the number of CPUs and meant to utilize all of them.
+			It assumes CPU-intensive non-blocking processing of in-memory data.
+
+			See also: [_Be Aware of ForkJoinPool#commonPool()_](https://dzone.com/articles/be-aware-of-forkjoinpoolcommonpool)
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+(: assumption: if import of web client / http client is present, parallelStreaming is for remote calls :)
+//ImportDeclaration[@PackageName=('org.springframework.web.client','org.apache.commons.httpclient')]
+/..//MethodCall[
+pmd-java:matchesSig('java.util.Collection#parallelStream()')
+and not(ancestor::ExpressionStatement//MethodCall[pmd-java:matchesSig('java.util.concurrent.ExecutorService#submit(_)')])
+]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+import java.util.concurrent.*;
+import java.util.stream.*;
+import java.util.*;
+import org.springframework.web.client.RestTemplate;
+
+public class Foo {
+	final List<String> list = new ArrayList();
+	final ForkJoinPool myFjPool = new ForkJoinPool(10);
+	final ExecutorService myExePool = Executors.newFixedThreadPool(10);
+
+	void bad1() {
+		list.parallelStream().forEach(elem -> storeDataRemoteCall(elem)); // bad
+	}
+
+	void good1() {
+		CompletableFuture[] futures = list.stream().map(elem -> CompletableFuture.supplyAsync(() -> storeDataRemoteCall(elem), myExePool))
+				.toArray(CompletableFuture[]::new);
+		CompletableFuture.allOf(futures).get(10, TimeUnit.MILLISECONDS));
+	}
+
+	void good2() throws ExecutionException, InterruptedException {
+		myFjPool.submit(() ->
+				list.parallelStream().forEach(elem -> storeDataRemoteCall(elem))
+		).get();
+	}
+
+	String storeDataRemoteCall(String elem) {
+		// do remote call, blocking. We don't use the returned value.
+		RestTemplate tmpl;
+		return "";
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidCommonPoolForFutureAsync"
+		language="java"
+		message="Avoid using the common thread pool, use a separate pool"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			CompletableFuture.supplyAsync/runAsync is typically used for remote calls.
+			By default it uses the common pool.
+			The number of threads in the common pool is equal to the number of CPU's, which is suitable for in-memory processing.
+			For I/O, however, this number is typically not suitable because most time is spent waiting for the response and not in CPU.
+			The common pool must not be used for blocking calls.
+
+			Solution: A separate, properly sized pool of threads (an Executor) should be used for the async calls.
+
+			See also: [_Be Aware of ForkJoinPool#commonPool()_](https://dzone.com/articles/be-aware-of-forkjoinpoolcommonpool)
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodCall[pmd-java:matchesSig('java.util.concurrent.CompletableFuture#supplyAsync(_)') or pmd-java:matchesSig('java.util.concurrent.CompletableFuture#runAsync(_)')]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+public class Foo {
+	private final ExecutorService asyncPool = Executors.newFixedThreadPool(8);
+
+	void bad() {
+		CompletableFuture<Pair<String, Boolean>>[] futures = accounts.stream()
+		.map(account -> CompletableFuture.supplyAsync(() -> isAccountBlocked(account))) // bad
+		.toArray(CompletableFuture[]::new);
+	}
+
+	void good() {
+		CompletableFuture<Pair<String, Boolean>>[] futures = accounts.stream()
+		.map(account -> CompletableFuture.supplyAsync(() -> isAccountBlocked(account), asyncPool)) // good
+		.toArray(CompletableFuture[]::new);
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidCompletionServiceTake"
+		language="java"
+		message="Avoid CompletionService.take, use poll"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			`take()` stalls indefinitely in case of hanging threads and consumes a thread.
+
+			Solution: use `poll()` with a timeout value and handle the timeout.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodCall[pmd-java:matchesSig('java.util.concurrent.CompletionService#take()')]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+public static <T> void collectAllCollectionReplyFromThreads(CompletionService<List<T>> completionService) {
+	try {
+		Future<List<T>> futureLocal = completionService.take(); // bad
+		Future<List<T>> futuresGood = completionService.poll(3, TimeUnit.SECONDS); // good
+		responseCollector.addAll(futuresGood.get(10, TimeUnit.SECONDS)); // good
+	} catch (InterruptedException | ExecutionException e) {
+		LOGGER.error("Error in Thread : {}", e);
+	} catch (TimeoutException e) {
+		LOGGER.error("Timeout in Thread : {}", e);
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidExecutorInvokeWithoutTimeout"
+		language="java"
+		message="Avoid using ExecutorService::invokeAll or invokeAny without a timeout"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Stalls indefinitely in case of stalled Callable(s) and consumes threads.
+
+			Solution: Provide a timeout to the invokeAll/invokeAny method and handle the timeout.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodCall[pmd-java:matchesSig('java.util.concurrent.ExecutorService#invokeAll(_)') or pmd-java:matchesSig('java.util.concurrent.ExecutorService#invokeAny(_)')]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+import java.util.concurrent.*;
+
+class Foo {
+	private List<Future<ServiceResult>> executeTasksBad(Collection<Callable<ServiceResult>> tasks, ExecutorService executor) throws Exception {
+		return executor.invokeAll(tasks); // bad, no timeout
+	}
+	private List<Future<ServiceResult>> executeTasksGood(Collection<Callable<ServiceResult>> tasks, ExecutorService executor) throws Exception {
+		return executor.invokeAll(tasks, OUR_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS); // good
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidFutureGetWithoutTimeout"
+		language="java"
+		message="Avoid future.get without timeout"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Stalls indefinitely in case of hanging threads and consumes a thread.
+
+			Solution: Provide a timeout value and handle the timeout.
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodCall[pmd-java:matchesSig('java.util.concurrent.Future#get()')]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+public static String bad(CompletableFuture<String> complFuture) throws Exception {
+	return complFuture.get(); // bad
+}
+
+public static String good(CompletableFuture<String> complFuture) throws Exception {
+	return complFuture.get(10, TimeUnit.SECONDS); // good
+}
+]]>
+		</example>
+	</rule>
+
+	<!-- CHANGED: Changed to HTTPClient5 -->
+	<rule name="AvoidRecreatingHttpClient"
+		language="java"
+		message="An HttpClient is created and combined with request-response"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Apache HttpClient with its connection pool and timeouts should be setup once and then used for many requests. 
+			It is quite expensive to create and can only provide the benefits of pooling when reused in all requests for that connection.
+
+			Solution: Create/build HttpClient with proper connection pooling and timeouts once, and then use it for requests.
+		</description>
+		<priority>3</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//ClassDeclaration[not(pmd-java:hasAnnotation('org.springframework.context.annotation.Configuration'))]
+//MethodDeclaration//MethodCall[
+	pmd-java:matchesSig('org.apache.hc.client5.http.impl.classic.HttpClientBuilder#create()')
+    or pmd-java:matchesSig('org.apache.hc.client5.http.impl.classic.HttpClients#custom()')
+    or pmd-java:matchesSig('org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder#build()')
+]
+[ancestor::MethodDeclaration//ClassType[pmd-java:typeIs('org.springframework.http.HttpEntity')
+	or pmd-java:typeIs('org.springframework.http.ResponseEntity')]
+]
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+			<![CDATA[
+class Foo {
+	ResponseEntity<Object> connectBad(Object req) {
+		HttpEntity<Object> requestEntity = new HttpEntity<>(req);
+
+		HttpClient httpClient = HttpClientBuilder.create().setMaxConnPerRoute(10).build(); // bad
+		return remoteCall(httpClient, requestEntity);
+	}
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="GsonCreatedForEachMethodCall"
+		language="java"
+		message="A Gson object is created for each method call, which is expensive."
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<description>
+			Problem: Gson creation is relatively expensive. A JMH benchmark shows a 24x improvement reusing one instance.
+
+			Solution: Since Gson objects are thread-safe after creation, they can be shared between threads. 
+			So reuse created instances from a static field. 
+			Pay attention to use thread-safe (custom) adapters and serializers.
+		</description>
+		<priority>3</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//ClassDeclaration[not (pmd-java:hasAnnotation('org.springframework.context.annotation.Configuration'))]//MethodDeclaration/(
+	.//ConstructorCall[pmd-java:typeIs('com.google.gson.Gson')]|
+	.//MethodCall[pmd-java:matchesSig('com.google.gson.GsonBuilder#create()')]//(ConstructorCall|VariableAccess)[pmd-java:typeIs('com.google.gson.GsonBuilder')]
+)
+]]>
+				</value>
+			</property>
+		</properties>
+		<example>
+<![CDATA[
+class Bad {
+	public String toJson(User user) {
+		return new Gson().toJson(user); // bad, new Gson() for each call
+	}
+}
+
+class Good {
+	private static final Gson GSON = new GsonBuilder().serializeNulls().create(); // good
+
+	public String toJson(User user) {
+		return GSON.toJson(user); // good, reuse GSON
+	}
+}
+]]>
+		</example>
 	</rule>
 </ruleset>
