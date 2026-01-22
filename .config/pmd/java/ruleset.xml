@@ -394,6 +394,30 @@ If you are 100% sure that you escaped the value properly and you have no better 
 		</properties>
 	</rule>
 
+	<!-- Jakarta Persistence -->
+	<rule name="AvoidListAsEntityRelation"
+		language="java"
+		message="Use a Set instead of a List in entity relations"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
+		externalInfoUrl="https://www.baeldung.com/spring-jpa-onetomany-list-vs-set#bd-pros-and-cons">
+		<description>
+`List` allows duplicates while a `Set` does not.
+A `Set` also prevents duplicates when the ORM reads multiple identical rows from the database (e.g. when using JOIN).
+		</description>
+		<priority>2</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//ClassDeclaration[pmd-java:hasAnnotation('jakarta.persistence.Entity')]
+//FieldDeclaration[pmd-java:hasAnnotation('jakarta.persistence.ManyToMany') or pmd-java:hasAnnotation('jakarta.persistence.OneToMany')]
+/ClassType[pmd-java:typeIs('java.util.List')]
+]]>
+				</value>
+			</property>
+		</properties>
+	</rule>
+
 
 	<!-- Rules from JPinPoint with slight modifications -->
 	<!-- https://github.com/jborgers/PMD-jPinpoint-rules -->

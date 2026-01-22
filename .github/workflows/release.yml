@@ -28,7 +28,7 @@ jobs:
 
     # Try to reuse existing cache from check-build
     - name: Try restore Maven Cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
@@ -91,7 +91,7 @@ jobs:
 
     - name: Create Release
       id: create-release
-      uses: shogo82148/actions-create-release@28d99e2a5b407558d17c15d0384fc0d7fb625b4c # v1
+      uses: shogo82148/actions-create-release@559c27ce7eb834825e2b55927c64f6d1bd1db716 # v1
       with:
         tag_name: v${{ steps.version.outputs.release }}
         release_name: v${{ steps.version.outputs.release }}
@@ -179,7 +179,7 @@ jobs:
 
     # Try to reuse existing cache from check-build
     - name: Try restore Maven Cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
