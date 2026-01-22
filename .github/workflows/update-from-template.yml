@@ -36,14 +36,14 @@ jobs:
       update_branch_merged_commit: ${{ steps.manage-branches.outputs.update_branch_merged_commit }}
       create_update_branch_merged_pr: ${{ steps.manage-branches.outputs.create_update_branch_merged_pr }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # Required because otherwise there are always changes detected when executing diff/rev-list
           fetch-depth: 0
           # If no PAT is used the following error occurs on a push:
           # refusing to allow a GitHub App to create or update workflow `.github/workflows/xxx.yml` without `workflows` permission
           token: ${{ secrets.UPDATE_FROM_TEMPLATE_PAT }}
-      
+
       - name: Init Git
         run: |
           git config --global user.email "111048771+xdev-gh-bot@users.noreply.github.com"
@@ -183,14 +183,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # Required because otherwise there are always changes detected when executing diff/rev-list
           fetch-depth: 0
           # If no PAT is used the following error occurs on a push:
           # refusing to allow a GitHub App to create or update workflow `.github/workflows/xxx.yml` without `workflows` permission
           token: ${{ secrets.UPDATE_FROM_TEMPLATE_PAT }}
-      
+
       - name: Init Git
         run: |
           git config --global user.email "111048771+xdev-gh-bot@users.noreply.github.com"

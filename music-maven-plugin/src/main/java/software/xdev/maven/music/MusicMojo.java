@@ -85,7 +85,7 @@ public class MusicMojo extends AbstractMojo
 	@Parameter
 	protected float defaultVolumeDB = -20.0f;
 	
-	@SuppressWarnings("java:S2142")
+	@SuppressWarnings({"java:S2142", "PMD.AvoidUnmanagedThreads"})
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException
 	{

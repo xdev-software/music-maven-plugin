@@ -74,6 +74,11 @@
 			<!-- https://docs.pmd-code.org/pmd-doc-7.11.0/pmd_rules_java_errorprone.html#avoidcatchingthrowable -->
 			<property name="illegalClassNames" value="Error,Throwable,NullPointerException,java.lang.Error,java.lang.Throwable,java.lang.NullPointerException"/>
 		</module>
+		<!-- Do not allow params and vars to end with collection type names -->
+		<module name="IllegalIdentifierName">
+			<property name="format" value="^(?!(.*(Map|List|Set))$).+$"/>
+			<property name="tokens" value="PARAMETER_DEF, VARIABLE_DEF, PATTERN_VARIABLE_DEF, RECORD_COMPONENT_DEF, LAMBDA"/>
+		</module>
 		<module name="IllegalImport"/>
 		<module name="InterfaceIsType"/>
 		<module name="JavadocStyle">
@@ -91,7 +96,7 @@
 			<property name="ignoreFieldDeclaration" value="true"/>
 			<property name="ignoreHashCodeMethod" value="true"/>
 			<!-- Defaults + other common constant values (e.g. time) -->
-			<property name="ignoreNumbers" value="-1, 0, 1, 2, 3, 4, 5, 10, 12, 24, 31, 60, 100, 1000"/>
+			<property name="ignoreNumbers" value="-1, 0, 1, 2, 3, 4, 5, 8, 10, 12, 16, 24, 25, 31, 32, 50, 60, 64, 100, 128, 200, 256, 500, 512, 1000, 1024, 2000, 2048, 4000, 4096, 8000, 8192"/>
 		</module>
 		<module name="MemberName"/>
 		<module name="MethodLength"/>
@@ -123,7 +128,8 @@
 		<module name="StringLiteralEquality"/>
 		<module name="SuppressWarningsHolder"/>
 		<module name="TodoComment">
-			<property name="severity" value="info"/>
+			<!-- Default is "TODO:" -->
+			<property name="format" value="(?i)(TODO)"/>
 		</module>
 		<module name="TypecastParenPad"/>
 		<module name="TypeName"/>

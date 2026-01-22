@@ -5,6 +5,7 @@
       <set>
         <option value="activate" />
         <option value="activateOnBatch" />
+        <option value="processAsync" />
         <option value="organizeImports" />
         <option value="reformatChangedCode" />
         <option value="fieldCanBeFinal" />

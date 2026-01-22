@@ -110,6 +110,7 @@ public class SpotifyPlayer implements Player<SpotifyMusicSource>
 		// Can't be stopped
 	}
 	
+	@SuppressWarnings("PMD.AvoidStringBuilderOrBuffer")
 	static String consumeStream(final InputStream stream)
 	{
 		final StringBuilder sb = new StringBuilder();

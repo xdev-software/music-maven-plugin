@@ -13,32 +13,32 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - run: mv .github/.lycheeignore .lycheeignore
 
       - name: Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@82202e5e9c2f4ef1a55a3d02563e1cb6041e5332 # v2
+        uses: lycheeverse/lychee-action@a8c4c7cb88f0c7386610c35eb25108e448569cb0 # v2
         with:
           fail: false # Don't fail on broken links, create an issue instead
 
       - name: Find already existing issue
         id: find-issue
         run: |
-          echo "number=$(gh issue list -l 'bug' -l 'automated' -L 1 -S 'in:title \"Link Checker Report\"' -s 'open' --json 'number' --jq '.[].number')" >> $GITHUB_OUTPUT
+          echo "number=$(gh issue list -l 'bug' -l 'automated' -L 1 -S 'in:title "Link Checker Report"' -s 'open' --json 'number' --jq '.[].number')" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ github.token }}
-          
+
       - name: Close issue if everything is fine
-        if: env.lychee_exit_code == 0 && steps.find-issue.outputs.number != ''
+        if: steps.lychee.outputs.exit_code == 0 && steps.find-issue.outputs.number != ''
         run: gh issue close -r 'not planned' ${{ steps.find-issue.outputs.number }}
         env:
           GH_TOKEN: ${{ github.token }}
 
       - name: Create Issue From File
-        if: env.lychee_exit_code != 0
-        uses: peter-evans/create-issue-from-file@e8ef132d6df98ed982188e460ebb3b5d4ef3a9cd # v5
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@fca9117c27cdc29c6c4db3b86c48e4115a786710 # v6
         with:
           issue-number: ${{ steps.find-issue.outputs.number }}
           title: Link Checker Report

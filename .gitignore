@@ -44,6 +44,8 @@ hs_err_pid*
 !.idea/saveactions_settings.xml
 !.idea/checkstyle-idea.xml
 !.idea/externalDependencies.xml
+!.idea/pmd-x.xml
+!.idea/PMDPlugin.xml
 
 !.idea/inspectionProfiles/
 .idea/inspectionProfiles/*

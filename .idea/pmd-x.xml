@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PMD-X" serialisationVersion="1">
+    <useSingleThread>false</useSingleThread>
+    <showSuppressedWarnings>true</showSuppressedWarnings>
+    <useCacheFile>true</useCacheFile>
+    <scanScope>SUPPORTED_ONLY_WITH_TESTS</scanScope>
+    <option name="activeLocationIds">
+      <option value="bb801722-ba9a-465f-b016-f83ad750f57f" />
+    </option>
+    <option name="locations">
+      <list>
+        <ConfigurationLocationState id="java-category/java/bestpractices.xml" type="BUNDLED" description="java-bestpractices">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="java-category/java/codestyle.xml" type="BUNDLED" description="java-codestyle">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="java-category/java/design.xml" type="BUNDLED" description="java-design">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="java-category/java/documentation.xml" type="BUNDLED" description="java-documentation">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="java-category/java/errorprone.xml" type="BUNDLED" description="java-errorprone">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="java-category/java/multithreading.xml" type="BUNDLED" description="java-multithreading">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="java-category/java/performance.xml" type="BUNDLED" description="java-performance">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="java-category/java/security.xml" type="BUNDLED" description="java-security">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="kotlin-category/kotlin/bestpractices.xml" type="BUNDLED" description="kotlin-bestpractices">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="kotlin-category/kotlin/errorprone.xml" type="BUNDLED" description="kotlin-errorprone">(bundled)</ConfigurationLocationState>
+        <ConfigurationLocationState id="bb801722-ba9a-465f-b016-f83ad750f57f" type="PROJECT_RELATIVE" description="XDEV">$PROJECT_DIR$/.config/pmd/java/ruleset.xml</ConfigurationLocationState>
+      </list>
+    </option>
+  </component>
+</project>
