@@ -33,19 +33,20 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v6
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
 
-    - name: Cache Maven
-      uses: actions/cache@v6
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-build-
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-build-
 
     - name: Build with Maven
       run: ./mvnw -B clean package
@@ -86,27 +87,28 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v6
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
 
-    - name: Cache Maven
-      uses: actions/cache@v6
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-checkstyle-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-checkstyle-
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-checkstyle-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-checkstyle-
 
-    - name: CheckStyle Cache
-      uses: actions/cache@v6
-      with:
-        path: '**/target/checkstyle-cachefile'
-        key: ${{ runner.os }}-checkstyle-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-checkstyle-
+      - name: CheckStyle Cache
+        uses: actions/cache@v6
+        with:
+          path: '**/target/checkstyle-cachefile'
+          key: ${{ runner.os }}-checkstyle-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-checkstyle-
 
     - name: Run Checkstyle
       run: ./mvnw -B checkstyle:check -P checkstyle -T2C
@@ -122,27 +124,28 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v6
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
 
-    - name: Cache Maven
-      uses: actions/cache@v6
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-pmd-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-pmd-
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-pmd-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-pmd-
 
-    - name: PMD Cache
-      uses: actions/cache@v6
-      with:
-        path: '**/target/pmd/pmd.cache'
-        key: ${{ runner.os }}-pmd-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-pmd-
+      - name: PMD Cache
+        uses: actions/cache@v6
+        with:
+          path: '**/target/pmd/pmd.cache'
+          key: ${{ runner.os }}-pmd-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-pmd-
 
     - name: Run PMD
       run: ./mvnw -B test pmd:aggregate-pmd-no-fork pmd:check -P pmd -DskipTests -T2C

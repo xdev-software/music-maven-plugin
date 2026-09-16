@@ -1,74 +1,56 @@
-## Contributing
+# Contributing
 
-We would absolutely love to get the community involved, and we welcome any form of contributions – comments and questions on different communication channels, issues and pull request and anything that you build and share using our components.
+We would absolutely love to get the community involved and we welcome any form of contributions - comments and questions, issues, pull request and anything that you build and share using our project.
 
-### Communication channels
+## Communication channels
 * Communication is primarily done using issues.
 * If you need support as soon as possible and you can't wait for any pull request, feel free to use [our support](https://xdev.software/en/services-products/support).
 * As a last resort measure or on otherwise important matter you may also [contact us directly](https://xdev.software/en/about-us/contact).
 
-### Ways to help
-* **Report bugs**<br/>Create an issue or send a pull request
+## Ways to help
+* **Report bugs**<br/>Create an issue and send a pull request
 * **Send pull requests**<br/>If you want to contribute code, check out the development instructions below.
   * However when contributing larger new features, please first discuss the change you wish to make via issue with the owners of this repository before making it.<br/>Otherwise your work might be rejected and your effort was pointless.
+  * Please also note that your pull request might not be noticed immediately when it's not attached to an issue.
 
 We also encourage you to read the [contribution instructions by GitHub](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
 
 ## Developing
 
-### Software Requirements
-You should have the following things installed:
-* Git
-* Java 25 - should be as unmodified as possible (Recommended: [Eclipse Adoptium](https://adoptium.net/temurin/releases/))
-* Maven (Note that the [Maven Wrapper](https://maven.apache.org/tools/wrapper/) is shipped with the repo)
-
-### Recommended setup
-* Install `IntelliJ`
-  * Recommended setup actions
-    * Disable not needed plugins
-    * Disable [telemetry](https://www.jetbrains.com/help/idea/settings-usage-statistics.html)
-    * Configure the available memory
-  * Import the project
-  * You will get prompted to install the required plugins
-  * Ensure that everything is encoded in `UTF-8`
-  * Ensure that the JDK/Java-Version is correct
+Project specific development instructions can be found in [DEVELOPING.md](./DEVELOPING.md)
 
 
-## Releasing [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/music-maven-plugin/release.yml?branch=master)](https://github.com/xdev-software/music-maven-plugin/actions/workflows/release.yml)
+## On AI use / LLM generated content
 
-Before releasing:
-* Consider doing a [test-deployment](https://github.com/xdev-software/music-maven-plugin/actions/workflows/test-deploy.yml?query=branch%3Adevelop) before actually releasing.
-* Check the [changelog](CHANGELOG.md)
+_Our reason for the strict policy is due to [unqualified people using the technology](https://en.wikipedia.org/wiki/AI_slop)._
 
-If the ``develop`` is ready for release, create a pull request to the ``master``-Branch and merge the changes
+<sup>This policy was inspired by the AI policies of `curl`, `MESA`, `matplotlib` and `Ghostty`.</sup>
 
-When the release is finished do the following:
-* Merge the auto-generated PR (with the incremented version number) back into the ``develop``
+### Issues and security reports
 
-### Release failures
+If you asked an AI tool to find problems in the project, you must make sure to reveal this fact in your issue.
 
-There are 2 modes of release failure:
-1. The remote server was e.g. down and non of the artifacts got published
-2. There was a build failure during release and only parts of the artifacts got released
+You must also double-check the findings carefully before reporting them to us to validate that the issue is indeed existing and working exactly as the AI says. AI-based tools frequently generate inaccurate or fabricated results.
 
-In case 1 we can re-release the existing version,<br/>in case 2 we have to release a new version when we can't get the artifacts deleted (as is the case with Maven Central)
+Further: It is rarely a good idea to copy and paste an AI generated report to the project. Those are typically too wordy and rarely to the point - in addition to the common fabricated details.<br/>
+If you actually find a problem with an AI and you have verified it yourself to be true: Write the issue/report yourself and explain the problem as you have learned it. This makes sure the AI-generated inaccuracies and invented issues are filtered out early before they waste more people's time.
 
-#### How-to: Re-Releasing an existing version
+As we take security reports seriously, we investigate each report with priority. This work is both time and energy consuming and pulls us away from doing other meaningful work. Fake and otherwise made up security problems effectively prevent us from doing real project work and make us waste time and resources.
 
-1. Delete the release on GitHub
-2. Delete the release Git tag from the repo (locally and remote!)
-3. Delete the ``master``-Branch and re-create it from the ``develop`` branch (or reset it to the state before the release-workflow commits have been done)
-    * This requires __temporarily__ removing the branch protection
-    * Once this was done a new release is triggered immediately!
+We will ban and report users who submit made up fake reports.
 
-#### How-to: Releasing a new version
+### Pull requests
 
-1. Merge the ``master`` branch back into ``develop`` (or another temporary branch)
-2. Make sure all master branch versions are prepared for a new release<br/>e.g. if the broken release was ``1.0.0`` the version should now be at ``1.0.1-SNAPSHOT`` - the ``SNAPSHOT`` is important for the workflow!
-3. Mark the broken release as broken e.g. inside the Changelog, GitHub Release page, etc.<br/>
-You can use something like this:
-    ```
-    > [!WARNING]
-    > This release is broken as my cat accidentally clicked the abort button during the process
-    ```
-4. Merge the changes back into the ``master`` branch to trigger a new release
+When contributing content to the project, you give us permission to use it as-is and you must make sure you are allowed to distribute it to us. By submitting a change to us, you agree that the changes can and should be adopted and get redistributed under the project's license. Authors should be explicitly aware that the burden is on them to ensure no unlicensed code is submitted to the project.
+
+This is independent if AI is used or not.
+
+When contributing a pull request you should of course always make sure that the proposal is good quality and a best effort that follows our guidelines. A basic rule of thumb is that if someone can spot that the contribution was made with the help of AI, you have more work to do.
+
+We can accept code written with the help of AI into the project, but the code must still follow coding standards, be written clearly and adhere to all the normal requirements we have.
+
+### Further notices
+
+* External AI tooling (e.g. bots, agents) directly interacting with the project - without a human - are not allowed and will be banned and reported.
+* For commit messages the same guidelines as described above for issues apply - fully generated messages are not allowed.
+* AI assisted/generated commits can NOT use the `Co-authored-by` tag as this is reserved for humans - use `Assisted-by`/`Generated-by` instead.

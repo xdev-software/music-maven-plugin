@@ -20,20 +20,21 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v6
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    # Try to reuse existing cache from check-build
-    - name: Try restore Maven Cache
-      uses: actions/cache/restore@v6
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-build-
+      # Try to reuse existing cache from check-build
+      - name: Try restore Maven Cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-build-
 
     - name: Build with Maven
       run: ./mvnw -B clean package -T2C
