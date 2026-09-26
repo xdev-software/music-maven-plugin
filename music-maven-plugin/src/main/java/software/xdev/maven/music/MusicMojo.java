@@ -18,6 +18,8 @@ package software.xdev.maven.music;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -26,6 +28,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Settings;
 
 import software.xdev.maven.music.sources.WrappedMusicSource;
 import software.xdev.maven.music.sources.mp3ogg.ClassPathMusicSource;
@@ -39,6 +43,9 @@ import software.xdev.maven.music.sources.mp3ogg.ClassPathMusicSource;
 public class MusicMojo extends AbstractMojo
 {
 	protected static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
+	
+	@Parameter(defaultValue = "${settings}", readonly = true)
+	private Settings settings;
 	
 	@Parameter(property = "music.skip")
 	protected boolean skip;
@@ -106,6 +113,8 @@ public class MusicMojo extends AbstractMojo
 			this.repeat = false;
 		}
 		
+		setupProxy();
+		
 		final Thread thread = new Thread(
 			this::runOnThread,
 			"Maven-Music-Player-" + THREAD_COUNTER.getAndIncrement());
@@ -157,5 +166,48 @@ public class MusicMojo extends AbstractMojo
 		{
 			this.getLog().warn("Failed to play stream", ex);
 		}
+	}
+	
+	private void setupProxy()
+	{
+		if(settings != null && settings.getProxies() != null)
+		{
+			final List<Proxy> activeProxies = settings.getProxies().stream().filter(Proxy::isActive).toList();
+			for(final String protocol : List.of("http", "https"))
+			{
+				activeProxies.stream()
+					.filter(proxy -> Objects.equals(proxy.getProtocol(), protocol))
+					.findFirst()
+					.ifPresentOrElse(
+						proxy -> setProxySettings(protocol, proxy), () -> {
+							if(this.getLog().isDebugEnabled())
+							{
+								this.getLog().debug("No active proxy found for protocol '%s'".formatted(protocol));
+							}
+						});
+			}
+		}
+	}
+	
+	private void setProxySettings(final String protocol, final Proxy proxy)
+	{
+		if(this.getLog().isDebugEnabled())
+		{
+			this.getLog()
+				.debug(("Setting proxy settings for protocol '%s' using proxy id '%s', host '%s', port '%s', username "
+					+ "'%s', password '%s', nonProxyHosts '%s'").formatted(
+					protocol,
+					proxy.getId(),
+					proxy.getHost(),
+					proxy.getPort(),
+					proxy.getUsername(),
+					Optional.ofNullable(proxy.getPassword()).map(pw -> "**********").orElse(""),
+					proxy.getNonProxyHosts()));
+		}
+		System.setProperty(protocol + ".proxyHost", Optional.ofNullable(proxy.getHost()).orElse(""));
+		System.setProperty(protocol + ".proxyPort", String.valueOf(proxy.getPort()));
+		System.setProperty(protocol + ".proxyUser", Optional.ofNullable(proxy.getUsername()).orElse(""));
+		System.setProperty(protocol + ".proxyPassword", Optional.ofNullable(proxy.getPassword()).orElse(""));
+		System.setProperty(protocol + ".nonProxyHosts", Optional.ofNullable(proxy.getNonProxyHosts()).orElse(""));
 	}
 }
