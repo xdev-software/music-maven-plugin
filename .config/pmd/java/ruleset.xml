@@ -13,6 +13,7 @@
 	<!-- About: Formatting -->
 	<!-- Some lines (e.g. description, examples and CDATA) have to start without any indents or this will result in incorrect formatting -->
 
+	<rule ref="category/java/bestpractices.xml/AssertStatementInTest"/>
 	<rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
 	<rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
 	<rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
@@ -45,8 +46,10 @@
 	<rule ref="category/java/codestyle.xml/LambdaCanBeMethodReference"/>
 	<rule ref="category/java/codestyle.xml/NoPackage"/>
 	<rule ref="category/java/codestyle.xml/PrematureDeclaration"/>
+	<rule ref="category/java/codestyle.xml/UnnecessaryBlock"/>
 	<rule ref="category/java/codestyle.xml/UnnecessarySemicolon"/>
 	<rule ref="category/java/codestyle.xml/VariableCanBeInlined"/>
+	<rule ref="category/java/codestyle.xml/VariableDeclarationUsageDistance"/>
 
 	<rule ref="category/java/design.xml">
 		<!-- Sometimes abstract classes have just fields -->
@@ -138,6 +141,7 @@
 		</properties>
 	</rule>
 
+	<rule ref="category/java/errorprone.xml/AssertEqualsArgumentOrder"/>
 	<rule ref="category/java/errorprone.xml/AssignmentToNonFinalStatic"/>
 	<rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
 	<rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators"/>
@@ -146,7 +150,6 @@
 	<rule ref="category/java/errorprone.xml/CollectionTypeMismatch"/>
 	<rule ref="category/java/errorprone.xml/ComparisonWithNaN"/>
 	<rule ref="category/java/errorprone.xml/DoNotCallGarbageCollectionExplicitly"/>
-	<rule ref="category/java/errorprone.xml/DontImportSun"/>
 	<rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
 	<rule ref="category/java/errorprone.xml/EqualsNull"/>
 	<rule ref="category/java/errorprone.xml/IdempotentOperations"/>
@@ -155,6 +158,7 @@
 	<rule ref="category/java/errorprone.xml/InstantiationToGetClass"/>
 	<rule ref="category/java/errorprone.xml/InvalidLogMessageFormat"/>
 	<rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
+	<rule ref="category/java/errorprone.xml/JUnitJupiterTestNoPrivateModifier"/>
 	<rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
 	<rule ref="category/java/errorprone.xml/MoreThanOneLogger"/>
 	<rule ref="category/java/errorprone.xml/NonStaticInitializer"/>
@@ -164,7 +168,8 @@
 	<rule ref="category/java/errorprone.xml/SingletonClassReturningNewInstance"/>
 	<rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
 	<rule ref="category/java/errorprone.xml/UnnecessaryCaseChange"/>
-	<rule ref="category/java/errorprone.xml/UselessPureMethodCall"/>
+	<rule ref="category/java/errorprone.xml/UnsupportedJdkApiUsage"/>
+	<rule ref="category/java/errorprone.xml/UnusedReturnValue"/>
 
 
 	<rule ref="category/java/multithreading.xml">
@@ -207,6 +212,36 @@
 
 	<rule ref="category/java/security.xml"/>
 
+
+	<rule name="AvoidOptionalGet"
+		language="java"
+		message="Avoid using Optional#get"
+		class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
+		externalInfoUrl="https://stackoverflow.com/a/49159955">
+		<description>
+`Optional#get` can be interpreted as a getter by developers, however this is not the case as it throws an exception when empty.
+
+It should be replaced by
+* doing a mapping directly using `.map` or `.ifPresent`
+* using the preferred `.orElseThrow`, `.orElse` or `.or` methods
+
+Java Developer Brian Goetz also writes regarding this topic:
+
+> Java 8 was a huge improvement to the platform, but one of the few mistakes we made was the naming of `Optional.get()`, because the name just invites people to call it without calling `isPresent()`, undermining the whole point of using `Optional` in the first place.
+>
+> During the Java 9 time frame, we proposed to deprecate `Optional.get()`, but the public response to that was ... let's say cold. As a smaller step, we introduced `orElseThrow()` in 10 (see [JDK-8140281](https://bugs.openjdk.java.net/browse/JDK-8140281)) as a more transparently named synonym for the current pernicious behavior of `get()`. IDEs warn on unconditional use of `get()`, but not on `orElseThrow()`, which is a step forward in teaching people to code better. The question is, in a sense, a "glass half empty" view of the current situation; `get()` is still problematic.
+		</description>
+		<priority>3</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+<![CDATA[
+//MethodCall[pmd-java:matchesSig('java.util.Optional#get()')]
+]]>
+				</value>
+			</property>
+		</properties>
+	</rule>
 
 	<rule name="AvoidStringBuilderOrBuffer"
 		language="java"
@@ -387,7 +422,8 @@ If you are 100% sure that you escaped the value properly and you have no better 
 				<value>
 <![CDATA[
 //ConstructorCall[pmd-java:typeIs('com.vaadin.flow.component.Html')] |
-//MethodCall[@MethodName='setAttribute' and //ImportDeclaration[starts-with(@PackageName,'com.vaadin')]]/ArgumentList/StringLiteral[1][contains(lower-case(@Image),'html')]
+//MethodCall[@MethodName='setAttribute' and //ImportDeclaration[starts-with(@PackageName,'com.vaadin')]]/ArgumentList/StringLiteral[1][contains(lower-case(@Image),'html')] |
+//MethodCall[pmd-java:matchesSig('com.vaadin.flow.dom.Element#setProperty(java.lang.String,java.lang.String)')]/ArgumentList/StringLiteral[1][contains(lower-case(@Image),'html')]
 ]]>
 				</value>
 			</property>
@@ -410,7 +446,7 @@ A `Set` also prevents duplicates when the ORM reads multiple identical rows from
 				<value>
 <![CDATA[
 //ClassDeclaration[pmd-java:hasAnnotation('jakarta.persistence.Entity')]
-//FieldDeclaration[pmd-java:hasAnnotation('jakarta.persistence.ManyToMany') or pmd-java:hasAnnotation('jakarta.persistence.OneToMany')]
+//FieldDeclaration[pmd-java:hasAnnotation('jakarta.persistence.ManyToMany') or pmd-java:hasAnnotation('jakarta.persistence.OneToMany') or pmd-java:hasAnnotation('jakarta.persistence.ElementCollection')]
 /ClassType[pmd-java:typeIs('java.util.List')]
 ]]>
 				</value>

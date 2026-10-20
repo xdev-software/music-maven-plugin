@@ -29,7 +29,7 @@ The following configuration will play some "elevator" music in the background as
 ```
 
 > [!TIP]
-> To avoiding being self-trolled/not accidentally blasting music in the office space while waiting for the trollees to be trolled, you can set ``-Dmusic.skip`` or a global environment variable ``MAVEN_OPTS="-Dmusic.skip=true"``
+> To avoiding being self-trolled/not accidentally blasting music in the office space while waiting for the trollees to be trolled, you can set `-Dmusic.skip` or a global environment variable `MAVEN_OPTS="-Dmusic.skip=true"`
 
 ### Customizing the music
 
@@ -63,16 +63,16 @@ You can customize the music by adding other sources:
 
 | Codec | Container |
 | --- | --- |
-| [MP3](https://en.wikipedia.org/wiki/MP3) | ``.mp3`` |
-| [Vorbis](https://en.wikipedia.org/wiki/Vorbis) | [``.ogg``](https://en.wikipedia.org/wiki/Ogg) |
+| [MP3](https://en.wikipedia.org/wiki/MP3) | `.mp3` |
+| [Vorbis](https://en.wikipedia.org/wiki/Vorbis) | [`.ogg`](https://en.wikipedia.org/wiki/Ogg) |
 
 > [!NOTE]
 > Container files can also include different codecs.
-> For example ``.ogg`` can also contain ``Opus``, ``Speex``, ``FLAC``, ... which are not supported.
+> For example `.ogg` can also contain `Opus`, `Speex`, `FLAC`, ... which are not supported.
 
 > [!TIP]
-> If you want to convert to supported formats you can do so with [``ffmpeg``](https://www.ffmpeg.org/):<br/>
-> ``ffmpeg -i music.opus music.ogg``
+> If you want to convert to supported formats you can do so with [`ffmpeg`](https://www.ffmpeg.org/):<br/>
+> `ffmpeg -i music.opus music.ogg`
 
 ### Spotify
 
@@ -98,9 +98,9 @@ You can also play music from Spotify:
 > Requirements/Limitation:
 > * The Spotify app needs to be installed.
 > * Songs/Playlist can only be started asynchronously; it's not possible to detect when a song/playlist has ended
->    * Therefore playing multiple songs/playlists in a loop is not working. You should set ``repeat`` to ``false``.
+>    * Therefore playing multiple songs/playlists in a loop is not working. You should set `repeat` to `false`.
 > * Playback might not always be started automatically by the Spotify app.
-> * Playback is started using OS specific processes (e.g. ``cmd`` on Windows, ``osascript`` on macOS and ``dbus-send`` on Linux).<br/>This might not work with certain system setups.
+> * Playback is started using OS specific processes (e.g. `cmd` on Windows, `osascript` on macOS and `dbus-send` on Linux).<br/>This might not work with certain system setups.
 
 ## Installation
 [Installation guide for the latest release](https://github.com/xdev-software/music-maven-plugin/releases/latest#Installation)
@@ -111,7 +111,7 @@ You can also play music from Spotify:
 > Might be loud!
 
 * Checkout the repo
-* Run ``mvn install``
+* Run `mvn install`
 
 ## Why?
 This is obviously a joke/fun plugin.<br/>
@@ -120,12 +120,12 @@ You probably shouldn't use it in production or maybe only on April 1st to annoy 
 We got the idea during XDEV's christmas party as [rfichtner](https://github.com/rfichtner) always needs more plugins for funnier Maven presentations and was inspired by [this GraalVM issue from joshlong](https://github.com/oracle/graal/issues/5327).
 
 ## Support
-If you need support as soon as possible and you can't wait for any pull request, feel free to use [our support](https://xdev.software/en/services/support).
+If you need support as soon as possible and you can't wait for any pull request, feel free to use [our support](https://xdev.software/en/services-products/support).
 
 ## Contributing
 See the [contributing guide](./CONTRIBUTING.md) for detailed instructions on how to get started with our project.
 
 ## Dependencies and Licenses
-View the [license of the current project](LICENSE) or the [summary including all dependencies](https://xdev-software.github.io/music-maven-plugin/dependencies)
+View the [license of the current project](LICENSE) or the [summary including all dependencies](https://xdev-software.github.io/music-maven-plugin)
 
-The license and download information for the [built-in music](./music-maven-plugin/src/main/resources/default/) can be found in [sources.txt](./music-maven-plugin/src/main/resources/default/sources.txt).
+The license and download information for the [built-in music](./src/music-maven-plugin/src/main/resources/default/) can be found in [sources.txt](./src/music-maven-plugin/src/main/resources/default/sources.txt).

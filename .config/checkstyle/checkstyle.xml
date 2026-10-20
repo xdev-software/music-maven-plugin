@@ -65,6 +65,7 @@
 		<module name="ExplicitInitialization">
 			<property name="severity" value="info"/>
 		</module>
+		<module name="ExpressionOverBlockLambda"/>
 		<module name="FinalClass"/>
 		<module name="FinalParameters"/>
 		<module name="GenericWhitespace"/>
@@ -79,11 +80,15 @@
 			<property name="format" value="^(?!(.*(Map|List|Set))$).+$"/>
 			<property name="tokens" value="PARAMETER_DEF, VARIABLE_DEF, PATTERN_VARIABLE_DEF, RECORD_COMPONENT_DEF, LAMBDA"/>
 		</module>
-		<module name="IllegalImport"/>
-		<module name="InterfaceIsType"/>
-		<module name="JavadocStyle">
-			<property name="checkFirstSentence" value="false"/>
+		<!-- Name classes correctly and don't use generic name for everything -->
+		<module name="IllegalIdentifierName">
+			<property name="format" value="^(?!(.*(Helper|Util(s|ity)?))$).+$"/>
+			<property name="tokens" value=" CLASS_DEF"/>
 		</module>
+		<module name="IllegalImport"/>
+		<module name="IllegalSymbol"/>
+		<module name="InterfaceIsType"/>
+		<module name="JavadocContentLocation"/>
 		<module name="LeftCurly">
 			<!-- Default minus Lambda -->
 			<property name="tokens" value="ANNOTATION_DEF, CLASS_DEF, CTOR_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF, OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF"/>
@@ -107,14 +112,17 @@
 		<module name="ModifierOrder"/>
 		<module name="NeedBraces"/>
 		<module name="NoClone"/>
+		<module name="NoCodeInFile"/>
 		<module name="NoFinalizer"/>
 		<module name="NonEmptyAtclauseDescription"/>
 		<module name="NoWhitespaceAfter"/>
 		<module name="NoWhitespaceBefore"/>
+		<module name="ModifierOrder"/>
 		<module name="OneStatementPerLine"/>
 		<module name="OneTopLevelClass"/>
 		<module name="OperatorWrap"/>
 		<module name="OuterTypeNumber"/>
+		<module name="PackageDeclaration"/>
 		<module name="PackageName"/>
 		<module name="ParameterName"/>
 		<module name="ParenPad"/>
@@ -140,6 +148,9 @@
 		<module name="UnnecessarySemicolonInTryWithResources"/>
 		<module name="UnusedImports"/>
 		<module name="UnusedLocalVariable"/>
+		<module name="UnusedPrivateField"/>
+		<!-- Disabled by default; should be enabled on Java 25+ -->
+		<!-- <module name="UnusedTryResourceShouldBeUnnamed"/> -->
 		<module name="UpperEll"/>
 		<module name="VisibilityModifier">
 			<property name="packageAllowed" value="true"/>

@@ -6,46 +6,62 @@
 
 	<parent>
 		<groupId>software.xdev</groupId>
-		<artifactId>music-maven-plugin-root</artifactId>
+		<artifactId>demos</artifactId>
 		<version>2.0.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>music-maven-plugin-demo</artifactId>
-	<version>2.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<organization>
-		<name>XDEV Software</name>
-		<url>https://xdev.software</url>
-	</organization>
-
 	<properties>
-		<javaVersion>17</javaVersion>
-		<maven.compiler.release>${javaVersion}</maven.compiler.release>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
 		<mainClass>software.xdev.Application</mainClass>
 	</properties>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>software.xdev</groupId>
+					<artifactId>music-maven-plugin</artifactId>
+					<version>${project.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.1</version>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.8.0</version>
 				<configuration>
-					<release>${maven.compiler.release}</release>
-					<compilerArgs>
-						<arg>-proc:none</arg>
-					</compilerArgs>
+					<archive>
+						<manifest>
+							<mainClass>${mainClass}</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Multi-Release>true</Multi-Release>
+						</manifestEntries>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
+
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -57,7 +73,6 @@
 					<plugin>
 						<groupId>software.xdev</groupId>
 						<artifactId>music-maven-plugin</artifactId>
-						<version>${project.version}</version>
 						<executions>
 							<execution>
 								<id>1-elevator</id>
@@ -115,7 +130,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>3.6.3</version>
+						<version>3.6.4</version>
 						<executions>
 							<execution>
 								<id>1</id>
@@ -156,7 +171,6 @@
 					<plugin>
 						<groupId>software.xdev</groupId>
 						<artifactId>music-maven-plugin</artifactId>
-						<version>${project.version}</version>
 						<executions>
 							<execution>
 								<id>spotify</id>

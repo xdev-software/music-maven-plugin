@@ -61,4 +61,4 @@ body:
     attributes:
       label: Additional information
       description: |
-        Any other relevant information you'd like to include
+        Any other relevant information you'd like to include, e.g. screenshots or video recordings of the bug

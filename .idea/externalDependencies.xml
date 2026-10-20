@@ -3,5 +3,6 @@
   <component name="ExternalDependencies">
     <plugin id="CheckStyle-IDEA" />
     <plugin id="software.xdev.saveactions" />
+    <plugin id="software.xdev.pmd" />
   </component>
 </project>

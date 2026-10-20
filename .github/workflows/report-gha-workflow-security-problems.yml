@@ -1,0 +1,61 @@
+name: Report workflow security problems
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ develop ]
+    paths:
+      - '.github/workflows/**'
+
+permissions:
+  issues: write
+
+jobs:
+  prt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only run this in our repos (Prevent notification spam by forks)
+    if: ${{ github.repository_owner == 'xdev-software' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check
+        id: check
+        run: |
+          grep -l 'pull_request_target:' --exclude report-gha-workflow-security-problems.yml *.yml > reported.txt && exit 1 || exit 0
+        working-directory: .github/workflows
+
+      - name: Find already existing issue
+        id: find-issue
+        if: ${{ !cancelled() }}
+        run: |
+          echo "number=$(gh issue list -l 'bug' -l 'automated' -L 1 -S 'in:title "Incorrectly configure GHA workflow (prt)"' -s 'open' --json 'number' --jq '.[].number')" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Close issue if everything is fine
+        if: ${{ success() && steps.find-issue.outputs.number != '' }}
+        run: gh issue close -r 'not planned' ${{ steps.find-issue.outputs.number }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create report
+        if: ${{ failure() && steps.check.conclusion == 'failure' }}
+        run: |
+          echo 'Detected usage of `pull_request_target`. This event is dangerous and MUST NOT BE USED AT ALL COST!' > reported.md
+          echo '' >> reported.md
+          echo '/cc @xdev-software/gha-workflow-security' >> reported.md
+          echo '' >> reported.md
+          echo '```' >> reported.md
+          cat .github/workflows/reported.txt >> reported.md
+          echo '```' >> reported.md
+          cat reported.md
+
+      - name: Create Issue From File
+        if: ${{ failure() && steps.check.conclusion == 'failure' }}
+        uses: peter-evans/create-issue-from-file@fca9117c27cdc29c6c4db3b86c48e4115a786710 # v6
+        with:
+          issue-number: ${{ steps.find-issue.outputs.number }}
+          title: 'Incorrectly configure GHA workflow (prt)'
+          content-filepath: ./reported.md
+          labels: bug, automated

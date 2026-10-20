@@ -19,9 +19,6 @@ on:
       - '.idea/**'
       - 'assets/**'
 
-env:
-  DEMO_MAVEN_MODULE: ${{ github.event.repository.name }}-demo
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,21 +28,22 @@ jobs:
         java: [17, 21, 25]
         distribution: [temurin]
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v5
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
 
-    - name: Cache Maven
-      uses: actions/cache@v5
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-build-
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-build-
 
     - name: Build with Maven
       run: ./mvnw -B clean package
@@ -68,13 +66,6 @@ jobs:
           exit 1
         fi
 
-    - name: Upload demo files
-      uses: actions/upload-artifact@v6
-      with:
-        name: demo-files-java-${{ matrix.java }}
-        path: ${{ env.DEMO_MAVEN_MODULE }}/target/${{ env.DEMO_MAVEN_MODULE }}.jar
-        if-no-files-found: error
-
   checkstyle:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'renovate/') }}
@@ -84,29 +75,30 @@ jobs:
         java: [21]
         distribution: [temurin]
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v5
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
 
-    - name: Cache Maven
-      uses: actions/cache@v5
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-checkstyle-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-checkstyle-
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-checkstyle-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-checkstyle-
 
-    - name: CheckStyle Cache
-      uses: actions/cache@v5
-      with:
-        path: '**/target/checkstyle-cachefile'
-        key: ${{ runner.os }}-checkstyle-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-checkstyle-
+      - name: CheckStyle Cache
+        uses: actions/cache@v6
+        with:
+          path: '**/target/checkstyle-cachefile'
+          key: ${{ runner.os }}-checkstyle-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-checkstyle-
 
     - name: Run Checkstyle
       run: ./mvnw -B checkstyle:check -P checkstyle -T2C
@@ -120,39 +112,40 @@ jobs:
         java: [17]
         distribution: [temurin]
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v5
-      with:
-        distribution: ${{ matrix.distribution }}
-        java-version: ${{ matrix.java }}
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
 
-    - name: Cache Maven
-      uses: actions/cache@v5
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-pmd-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-pmd-
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-pmd-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-pmd-
 
-    - name: PMD Cache
-      uses: actions/cache@v5
-      with:
-        path: '**/target/pmd/pmd.cache'
-        key: ${{ runner.os }}-pmd-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-pmd-
+      - name: PMD Cache
+        uses: actions/cache@v6
+        with:
+          path: '**/target/pmd/pmd.cache'
+          key: ${{ runner.os }}-pmd-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-pmd-
 
     - name: Run PMD
-      run: ./mvnw -B test pmd:aggregate-pmd-no-fork pmd:check -P pmd -DskipTests -T2C
+      run: ./mvnw -B test pmd:aggregate-pmd-no-fork pmd:check -P pmd -T2C
 
     - name: Run CPD (Copy Paste Detector)
-      run: ./mvnw -B pmd:aggregate-cpd pmd:cpd-check -P pmd -DskipTests -T2C
+      run: ./mvnw -B pmd:aggregate-cpd pmd:cpd-check -P pmd -T2C
 
     - name: Upload report
-      if: always()
-      uses: actions/upload-artifact@v6
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
       with:
         name: pmd-report
         if-no-files-found: ignore

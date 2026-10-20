@@ -4,13 +4,6 @@ on:
   push:
     branches: [ master ]
 
-env:
-  PRIMARY_MAVEN_MODULE: ${{ github.event.repository.name }}
-
-permissions:
-  contents: write
-  pull-requests: write
-
 # DO NOT RESTORE CACHE for critical release steps to prevent a (extremely unlikely) scenario 
 # where a supply chain attack could be achieved due to poisoned cache
 jobs:
@@ -18,25 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
-    - name: Set up JDK
-      uses: actions/setup-java@v5
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    # Try to reuse existing cache from check-build
-    - name: Try restore Maven Cache
-      uses: actions/cache/restore@v5
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-mvn-build-
+      # Try to reuse existing cache from check-build
+      - name: Try restore Maven Cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-build-
 
     - name: Build with Maven
-      run: ./mvnw -B clean package -T2C
+      run: ../mvnw -B clean package -T2C
+      working-directory: src
       
     - name: Check for uncommited changes
       run: |
@@ -60,10 +55,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-code]
     timeout-minutes: 10
+    permissions:
+      contents: write
     outputs:
       upload_url: ${{ steps.create-release.outputs.upload_url }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Configure Git
       run: |
@@ -76,10 +73,9 @@ jobs:
     - name: Get version
       id: version
       run: |
-        version=$(../mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+        version=$(./mvnw -B help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "release=$version" >> $GITHUB_OUTPUT
         echo "releasenumber=${version//[!0-9]/}" >> $GITHUB_OUTPUT
-      working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
 
     - name: Commit and Push
       run: |
@@ -91,7 +87,7 @@ jobs:
 
     - name: Create Release
       id: create-release
-      uses: shogo82148/actions-create-release@559c27ce7eb834825e2b55927c64f6d1bd1db716 # v1
+      uses: shogo82148/actions-create-release@cfc5a8374495dd25fe96f758cc09251ab6286911 # v1
       with:
         tag_name: v${{ steps.version.outputs.release }}
         release_name: v${{ steps.version.outputs.release }}
@@ -105,7 +101,7 @@ jobs:
           ```XML
           <plugin>
              <groupId>software.xdev</groupId>
-             <artifactId>${{ env.PRIMARY_MAVEN_MODULE }}</artifactId>
+             <artifactId>${{ github.event.repository.name }}</artifactId>
              <version>${{ steps.version.outputs.release }}</version>
           </plugin>
           ```
@@ -115,7 +111,7 @@ jobs:
     needs: [prepare-release]
     timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Init Git and pull
       run: |
@@ -124,46 +120,46 @@ jobs:
         git pull
 
     - name: Set up JDK
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with: # running setup-java overwrites the settings.xml
         distribution: 'temurin'
         java-version: '17'
         server-id: github-central
-        server-password: PACKAGES_CENTRAL_TOKEN
-        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        server-password-env-var: PACKAGES_CENTRAL_TOKEN
+        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Only import once
 
     - name: Publish to GitHub Packages Central
-      run: ../mvnw -B deploy -P publish -DskipTests -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central
-      working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
+      run: ../mvnw -B deploy -P publish -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central
+      working-directory: src
       env:
         PACKAGES_CENTRAL_TOKEN: ${{ secrets.PACKAGES_CENTRAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
     - name: Set up JDK
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with: # running setup-java again overwrites the settings.xml
         distribution: 'temurin'
         java-version: '17'
         server-id: sonatype-central-portal
-        server-username: MAVEN_CENTRAL_USERNAME
-        server-password: MAVEN_CENTRAL_TOKEN
-        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        server-username-env-var: MAVEN_CENTRAL_USERNAME
+        server-password-env-var: MAVEN_CENTRAL_TOKEN
+        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
 
     - name: Publish to Central Portal
-      run: ../mvnw -B deploy -P publish,publish-sonatype-central-portal -DskipTests
+      run: ../mvnw -B deploy -P publish,publish-sonatype-central-portal
+      working-directory: src
       env:
         MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
         MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-      working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
 
-  publish-pages:
+  build-pages:
     runs-on: ubuntu-latest
     needs: [prepare-release]
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Init Git and pull
       run: |
@@ -172,14 +168,14 @@ jobs:
         git pull
 
     - name: Setup - Java
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         java-version: '17'
         distribution: 'temurin'
 
     # Try to reuse existing cache from check-build
     - name: Try restore Maven Cache
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
@@ -187,22 +183,71 @@ jobs:
           ${{ runner.os }}-mvn-build-
 
     - name: Build site
-      run: ../mvnw -B compile site -DskipTests -T2C
-      working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
+      run: ../mvnw -B compile site -P site -T2C
+      working-directory: src
+    
+    - name: Aggregate site
+      run: |
+        # Compile is required, otherwise dep resolution failure
+        echo "Looking up modules"
+        module_dirs=($(../mvnw -B -q --also-make compile exec:exec -P site -Dexec.executable="pwd" -Dmaven.main.skip))
+        base_module_full="${module_dirs[0]}"
 
-    - name: Deploy to Github pages
-      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        echo "Found modules - Src: $base_module_full"
+
+        base_cut_away_length=$((${#base_module_full}+1))
+
+        echo "BasePathLengthToCutAway: $base_cut_away_length"
+
+        is_first=true
+        for full_module_path in "${module_dirs[@]}"
+        do
+          if [ $is_first = true ]; then
+            echo "Skipping initial/base module"
+            is_first=false
+            continue
+          fi
+
+          m=${full_module_path:$base_cut_away_length}
+
+          echo "$m/target/site/. -> ./target/site/$m"
+          mkdir -p ./target/site/$m
+          cp -r $m/target/site/. ./target/site/$m
+        done
+      working-directory: src
+    
+    - name: Upload pages artifact
+      uses: actions/upload-pages-artifact@v5
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./${{ env.PRIMARY_MAVEN_MODULE }}/target/site
-        force_orphan: true
+        path: src/target/site
+
+  deploy-pages:
+    runs-on: ubuntu-latest
+    needs: [build-pages]
+    timeout-minutes: 10
+    concurrency:
+      group: 'pages'
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v5
 
   after-release:
     runs-on: ubuntu-latest
     needs: [publish-maven]
     timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Init Git and pull
       run: |
