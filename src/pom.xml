@@ -4,118 +4,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-<<<<<<<< HEAD:music-maven-plugin/pom.xml
-	<groupId>software.xdev</groupId>
-	<artifactId>music-maven-plugin</artifactId>
-	<version>2.0.2-SNAPSHOT</version>
-	<packaging>maven-plugin</packaging>
-
-	<name>music-maven-plugin</name>
-	<description>music-maven-plugin</description>
-	<url>https://github.com/xdev-software/music-maven-plugin</url>
-
-	<scm>
-		<url>https://github.com/xdev-software/music-maven-plugin</url>
-		<connection>scm:git:https://github.com/xdev-software/music-maven-plugin.git</connection>
-	</scm>
-
-	<inceptionYear>2024</inceptionYear>
-
-	<organization>
-		<name>XDEV Software</name>
-		<url>https://xdev.software</url>
-	</organization>
-
-	<developers>
-		<developer>
-			<name>XDEV Software</name>
-			<organization>XDEV Software</organization>
-			<url>https://xdev.software</url>
-		</developer>
-	</developers>
-
-	<licenses>
-		<license>
-			<name>Apache-2.0</name>
-			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<properties>
-		<javaVersion>17</javaVersion>
-		<maven.compiler.release>${javaVersion}</maven.compiler.release>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<maven.plugin.version>3.9.12</maven.plugin.version>
-	</properties>
-========
 	<parent>
 		<groupId>software.xdev</groupId>
 		<artifactId>root</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>2.0.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>src</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>template-placeholder</module>
+		<module>music-maven-plugin</module>
 	</modules>
->>>>>>>> origin/update-from-template-github_com_xdev-software_standard-maven-template_master:src/pom.xml
-
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
-			<version>${maven.plugin.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>${maven.plugin.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.plugin-tools</groupId>
-			<artifactId>maven-plugin-annotations</artifactId>
-			<version>3.15.2</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- This supports MP3 + OGG/vorbis -->
-		<!-- https://stackoverflow.com/a/17737483 -->
-		<!-- It's kind of hard to add other codecs since they usually require JNA bindings - which can't be
-		 loaded properly in Maven and/or with newer Java version - or require custom bindings and additional code -->
-		<dependency>
-			<groupId>com.googlecode.soundlibs</groupId>
-			<artifactId>tritonus-share</artifactId>
-			<version>0.3.7.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.soundlibs</groupId>
-			<artifactId>mp3spi</artifactId>
-			<version>1.9.5.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.soundlibs</groupId>
-			<artifactId>vorbisspi</artifactId>
-			<version>1.0.3.3</version>
-		</dependency>
-	</dependencies>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-plugin-report-plugin</artifactId>
-				<version>3.15.2</version>
-			</plugin>
-		</plugins>
-	</reporting>
 
 	<build>
 		<pluginManagement>
