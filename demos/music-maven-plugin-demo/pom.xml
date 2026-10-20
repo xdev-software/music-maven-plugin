@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>software.xdev</groupId>
 		<artifactId>demos</artifactId>
-		<version>2.0.2</version>
+		<version>2.0.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>music-maven-plugin-demo</artifactId>
