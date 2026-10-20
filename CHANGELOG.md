@@ -1,3 +1,7 @@
+# 2.0.2
+* Restructured project
+* Updated dependencies
+
 # 2.0.1
 * Updated dependencies
 
