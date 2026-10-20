@@ -14,8 +14,13 @@
     },
     {
       "description": "Ignore project internal dependencies",
-      "packagePattern": "^software.xdev:music-maven-plugin",
-      "datasources": [
+      "matchPackagePatterns": [
+        "^software.xdev.*:music-maven-plugin",
+        "^software.xdev.*:demos",
+        "^software.xdev.*:src",
+        "^software.xdev.*:root"
+      ],
+      "matchDatasources": [
         "maven"
       ],
       "enabled": false
@@ -25,7 +30,7 @@
       "matchPackagePatterns": [
         "^net.sourceforge.pmd"
       ],
-      "datasources": [
+      "matchDatasources": [
         "maven"
       ],
       "groupName": "net.sourceforge.pmd"

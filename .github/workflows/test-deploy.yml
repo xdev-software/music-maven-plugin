@@ -3,9 +3,6 @@ name: Test Deployment
 on:
   workflow_dispatch:
 
-env:
-  PRIMARY_MAVEN_MODULE: ${{ github.event.repository.name }}
-
 jobs:
   publish-maven:
     runs-on: ubuntu-latest
@@ -19,13 +16,13 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
         server-id: github-central
-        server-password: PACKAGES_CENTRAL_TOKEN
-        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        server-password-env-var: PACKAGES_CENTRAL_TOKEN
+        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Only import once
 
     - name: Publish to GitHub Packages Central
-      run: ../mvnw -B deploy -P publish -DskipTests -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central
-      working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
+      run: ../mvnw -B deploy -P publish -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central
+      working-directory: src
       env:
         PACKAGES_CENTRAL_TOKEN: ${{ secrets.PACKAGES_CENTRAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
@@ -36,13 +33,13 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
         server-id: sonatype-central-portal
-        server-username: MAVEN_CENTRAL_USERNAME
-        server-password: MAVEN_CENTRAL_TOKEN
-        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        server-username-env-var: MAVEN_CENTRAL_USERNAME
+        server-password-env-var: MAVEN_CENTRAL_TOKEN
+        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
 
     - name: Publish to Central Portal
-      run: ../mvnw -B deploy -P publish,publish-sonatype-central-portal -DskipTests
-      working-directory: ${{ env.PRIMARY_MAVEN_MODULE }}
+      run: ../mvnw -B deploy -P publish,publish-sonatype-central-portal
+      working-directory: src
       env:
         MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
         MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}

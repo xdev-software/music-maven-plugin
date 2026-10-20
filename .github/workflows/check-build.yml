@@ -19,9 +19,6 @@ on:
       - '.idea/**'
       - 'assets/**'
 
-env:
-  DEMO_MAVEN_MODULE: ${{ github.event.repository.name }}-demo
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -68,13 +65,6 @@ jobs:
           echo "::error::Unstaged changes detected. Locally try running: git clean -ffdx && ./mvnw -B clean package"
           exit 1
         fi
-
-    - name: Upload demo files
-      uses: actions/upload-artifact@v7
-      with:
-        name: demo-files-java-${{ matrix.java }}
-        path: ${{ env.DEMO_MAVEN_MODULE }}/target/${{ env.DEMO_MAVEN_MODULE }}.jar
-        if-no-files-found: error
 
   checkstyle:
     runs-on: ubuntu-latest
@@ -148,10 +138,10 @@ jobs:
             ${{ runner.os }}-pmd-
 
     - name: Run PMD
-      run: ./mvnw -B test pmd:aggregate-pmd-no-fork pmd:check -P pmd -DskipTests -T2C
+      run: ./mvnw -B test pmd:aggregate-pmd-no-fork pmd:check -P pmd -T2C
 
     - name: Run CPD (Copy Paste Detector)
-      run: ./mvnw -B pmd:aggregate-cpd pmd:cpd-check -P pmd -DskipTests -T2C
+      run: ./mvnw -B pmd:aggregate-cpd pmd:cpd-check -P pmd -T2C
 
     - name: Upload report
       if: ${{ !cancelled() }}

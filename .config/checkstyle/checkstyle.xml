@@ -112,14 +112,17 @@
 		<module name="ModifierOrder"/>
 		<module name="NeedBraces"/>
 		<module name="NoClone"/>
+		<module name="NoCodeInFile"/>
 		<module name="NoFinalizer"/>
 		<module name="NonEmptyAtclauseDescription"/>
 		<module name="NoWhitespaceAfter"/>
 		<module name="NoWhitespaceBefore"/>
+		<module name="ModifierOrder"/>
 		<module name="OneStatementPerLine"/>
 		<module name="OneTopLevelClass"/>
 		<module name="OperatorWrap"/>
 		<module name="OuterTypeNumber"/>
+		<module name="PackageDeclaration"/>
 		<module name="PackageName"/>
 		<module name="ParameterName"/>
 		<module name="ParenPad"/>

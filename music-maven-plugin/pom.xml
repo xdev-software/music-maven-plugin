@@ -4,6 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+<<<<<<<< HEAD:music-maven-plugin/pom.xml
 	<groupId>software.xdev</groupId>
 	<artifactId>music-maven-plugin</artifactId>
 	<version>2.0.2-SNAPSHOT</version>
@@ -50,6 +51,20 @@
 
 		<maven.plugin.version>3.9.12</maven.plugin.version>
 	</properties>
+========
+	<parent>
+		<groupId>software.xdev</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>src</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>template-placeholder</module>
+	</modules>
+>>>>>>>> origin/update-from-template-github_com_xdev-software_standard-maven-template_master:src/pom.xml
 
 	<dependencies>
 		<dependency>
@@ -115,6 +130,44 @@
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>3.9.0</version>
 				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.12.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.4.0</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<version>1.8.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>3.2.8</version>
+				</plugin>
+				<plugin>
+					<groupId>org.sonatype.central</groupId>
+					<artifactId>central-publishing-maven-plugin</artifactId>
+					<version>0.12.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -149,19 +202,7 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.15.0</version>
-				<configuration>
-					<release>${maven.compiler.release}</release>
-					<compilerArgs>
-						<arg>-proc:none</arg>
-					</compilerArgs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.12.0</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -179,7 +220,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.4.0</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -194,13 +234,84 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>publish</id>
+			<id>do-not-publish-this</id>
+			<activation>
+				<file>
+					<exists>skip-publish.marker</exists>
+				</file>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>flatten-maven-plugin</artifactId>
-						<version>1.8.0</version>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<configuration>
+							<skipSource>true</skipSource>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<artifactId>maven-install-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<configuration>
+							<skipPublishing>true</skipPublishing>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>pmd</id>
+			<properties>
+				<license.skip>true</license.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>publish</id>
+			<properties>
+				<license.skip>true</license.skip>
+				<skipTests>true</skipTests>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>flatten-maven-plugin</artifactId>
 						<configuration>
 							<flattenMode>ossrh</flattenMode>
 						</configuration>
@@ -217,7 +328,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.2.8</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -246,7 +356,6 @@
 					<plugin>
 						<groupId>org.sonatype.central</groupId>
 						<artifactId>central-publishing-maven-plugin</artifactId>
-						<version>0.11.0</version>
 						<extensions>true</extensions>
 						<configuration>
 							<publishingServerId>sonatype-central-portal</publishingServerId>
@@ -257,76 +366,11 @@
 			</build>
 		</profile>
 		<profile>
-			<id>checkstyle</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-checkstyle-plugin</artifactId>
-						<version>3.6.0</version>
-						<dependencies>
-							<dependency>
-								<groupId>com.puppycrawl.tools</groupId>
-								<artifactId>checkstyle</artifactId>
-								<version>14.1.0</version>
-							</dependency>
-						</dependencies>
-						<configuration>
-							<configLocation>../.config/checkstyle/checkstyle.xml</configLocation>
-							<includeTestSourceDirectory>true</includeTestSourceDirectory>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>pmd</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-pmd-plugin</artifactId>
-						<version>3.28.0</version>
-						<configuration>
-							<analysisCache>true</analysisCache>
-							<includeTests>true</includeTests>
-							<printFailingErrors>true</printFailingErrors>
-							<rulesets>
-								<ruleset>../.config/pmd/java/ruleset.xml</ruleset>
-							</rulesets>
-						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>net.sourceforge.pmd</groupId>
-								<artifactId>pmd-core</artifactId>
-								<version>7.27.0</version>
-							</dependency>
-							<dependency>
-								<groupId>net.sourceforge.pmd</groupId>
-								<artifactId>pmd-java</artifactId>
-								<version>7.27.0</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-				</plugins>
-			</build>
-			<reporting>
-				<plugins>
-					<!-- Required for reporting -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-jxr-plugin</artifactId>
-						<version>3.6.0</version>
-					</plugin>
-				</plugins>
-			</reporting>
+			<id>site</id>
+			<properties>
+				<license.skip>true</license.skip>
+				<skipTests>true</skipTests>
+			</properties>
 		</profile>
 	</profiles>
 </project>

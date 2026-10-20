@@ -126,6 +126,6 @@ If you need support as soon as possible and you can't wait for any pull request,
 See the [contributing guide](./CONTRIBUTING.md) for detailed instructions on how to get started with our project.
 
 ## Dependencies and Licenses
-View the [license of the current project](LICENSE) or the [summary including all dependencies](https://xdev-software.github.io/music-maven-plugin/dependencies)
+View the [license of the current project](LICENSE) or the [summary including all dependencies](https://xdev-software.github.io/music-maven-plugin)
 
-The license and download information for the [built-in music](./music-maven-plugin/src/main/resources/default/) can be found in [sources.txt](./music-maven-plugin/src/main/resources/default/sources.txt).
+The license and download information for the [built-in music](./src/music-maven-plugin/src/main/resources/default/) can be found in [sources.txt](./src/music-maven-plugin/src/main/resources/default/sources.txt).
