@@ -99,11 +99,11 @@ jobs:
           ## Installation
           Add the following lines to your pom:
           ```XML
-          <dependency>
+          <plugin>
              <groupId>software.xdev</groupId>
              <artifactId>${{ github.event.repository.name }}</artifactId>
              <version>${{ steps.version.outputs.release }}</version>
-          </dependency>
+          </plugin>
           ```
 
   publish-maven:
