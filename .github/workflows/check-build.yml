@@ -1,0 +1,153 @@
+name: Check Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ develop ]
+    paths-ignore: 
+      - '**.md'
+      - '.config/**'
+      - '.github/**'
+      - '.idea/**'
+      - 'assets/**'
+  pull_request:
+    branches: [ develop ]
+    paths-ignore: 
+      - '**.md'
+      - '.config/**'
+      - '.github/**'
+      - '.idea/**'
+      - 'assets/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        java: [17, 21, 25]
+        distribution: [temurin]
+    steps:
+    - uses: actions/checkout@v7
+
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
+
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-build-
+
+    - name: Build with Maven
+      run: ./mvnw -B clean package
+
+    - name: Check for uncommited changes
+      run: |
+        if [[ "$(git status --porcelain)" != "" ]]; then
+          echo ----------------------------------------
+          echo git status
+          echo ----------------------------------------
+          git status
+          echo ----------------------------------------
+          echo git diff
+          echo ----------------------------------------
+          git diff
+          echo ----------------------------------------
+          echo Troubleshooting
+          echo ----------------------------------------
+          echo "::error::Unstaged changes detected. Locally try running: git clean -ffdx && ./mvnw -B clean package"
+          exit 1
+        fi
+
+  checkstyle:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'renovate/') }}
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        java: [21]
+        distribution: [temurin]
+    steps:
+    - uses: actions/checkout@v7
+
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
+
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-checkstyle-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-checkstyle-
+
+      - name: CheckStyle Cache
+        uses: actions/cache@v6
+        with:
+          path: '**/target/checkstyle-cachefile'
+          key: ${{ runner.os }}-checkstyle-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-checkstyle-
+
+    - name: Run Checkstyle
+      run: ./mvnw -B checkstyle:check -P checkstyle -T2C
+
+  pmd:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'renovate/') }}
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        java: [17]
+        distribution: [temurin]
+    steps:
+    - uses: actions/checkout@v7
+
+    - parallel:
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
+
+      - name: Cache Maven
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-pmd-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-pmd-
+
+      - name: PMD Cache
+        uses: actions/cache@v6
+        with:
+          path: '**/target/pmd/pmd.cache'
+          key: ${{ runner.os }}-pmd-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-pmd-
+
+    - name: Run PMD
+      run: ./mvnw -B test pmd:aggregate-pmd-no-fork pmd:check -P pmd -T2C
+
+    - name: Run CPD (Copy Paste Detector)
+      run: ./mvnw -B pmd:aggregate-cpd pmd:cpd-check -P pmd -T2C
+
+    - name: Upload report
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: pmd-report
+        if-no-files-found: ignore
+        path: |
+          target/reports/**

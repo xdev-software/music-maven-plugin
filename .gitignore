@@ -1,3 +1,13 @@
+# Maven
+target/
+dependency-reduced-pom.xml
+
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Maven Flatten Plugin
+.flattened-pom.xml
+
 # Compiled class file
 *.class
 

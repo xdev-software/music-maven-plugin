@@ -1,4 +1,39 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "rebaseWhen": "behind-base-branch"
+  "rebaseWhen": "behind-base-branch",
+  "packageRules": [
+    {
+      "description": "Don't manage Java version in actions",
+      "matchDepTypes": [
+        "uses-with"
+      ],
+      "matchDatasources": [
+        "java-version"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Ignore project internal dependencies",
+      "matchPackagePatterns": [
+        "^software.xdev.*:template-placeholder",
+        "^software.xdev.*:demos",
+        "^software.xdev.*:src",
+        "^software.xdev.*:root"
+      ],
+      "matchDatasources": [
+        "maven"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Group net.sourceforge.pmd",
+      "matchPackagePatterns": [
+        "^net.sourceforge.pmd"
+      ],
+      "matchDatasources": [
+        "maven"
+      ],
+      "groupName": "net.sourceforge.pmd"
+    }
+  ]
 }
