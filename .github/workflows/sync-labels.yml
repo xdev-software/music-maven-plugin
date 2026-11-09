@@ -1,0 +1,25 @@
+name: Sync labels
+
+on:
+  push:
+    branches: develop
+    paths: 
+      - .github/labels.yml
+    
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/labels.yml
+
+      - uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2
+        with:
+          config-file: .github/labels.yml

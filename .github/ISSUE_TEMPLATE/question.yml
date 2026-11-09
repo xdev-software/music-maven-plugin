@@ -1,0 +1,31 @@
+name: ❓ Question
+description: Ask a question
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this form!
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "I made sure that there are *no existing issues* - [open](https://github.com/xdev-software/template-placeholder/issues) or [closed](https://github.com/xdev-software/template-placeholder/issues?q=is%3Aissue+is%3Aclosed) - which I could contribute my information to."
+          required: true
+        - label: "I have taken the time to fill in all the required details. I understand that the question will be dismissed otherwise."
+          required: true
+
+  - type: textarea
+    id: what-is-the-question
+    attributes:
+      label: What is/are your question(s)?
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: "Any other information you'd like to include - for instance logs, screenshots, etc."

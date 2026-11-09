@@ -1,0 +1,38 @@
+# Default
+## Required for template
+- name: bug
+  description: "Something isn't working"
+  color: 'd73a4a'
+- name: enhancement
+  description: New feature or request
+  color: '#a2eeef'
+- name: question
+  description: Information is requested
+  color: '#d876e3'
+## Others
+- name: duplicate
+  description: This already exists
+  color: '#cfd3d7'
+- name: good first issue
+  description: Good for newcomers
+  color: '#7057ff'
+- name: help wanted
+  description: Extra attention is needed
+  color: '#008672'
+- name: invalid
+  description: "This doesn't seem right"
+  color: '#e4e669'
+# Custom
+- name: automated
+  description: Created by an automation
+  color: '#000000'
+- name: "can't reproduce"
+  color: '#e95f2c'
+- name: customer-requested
+  description: Was requested by a customer of us
+  color: '#068374'
+- name: stale
+  color: '#ededed'
+- name: waiting-for-response
+  description: If no response is received after a certain time the issue will be closed
+  color: '#202020'

@@ -1,0 +1,64 @@
+name: 🐞 Bug
+description: Create a bug report for something that is broken
+labels: [bug]
+type: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug.
+
+        Please fill in as much information as possible about your bug so that we don't have to play "information ping-pong" and can help you immediately.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "I am able to reproduce the bug with the [latest version](https://github.com/xdev-software/template-placeholder/releases/latest)"
+          required: true
+        - label: "I made sure that there are *no existing issues* - [open](https://github.com/xdev-software/template-placeholder/issues) or [closed](https://github.com/xdev-software/template-placeholder/issues?q=is%3Aissue+is%3Aclosed) - which I could contribute my information to."
+          required: true
+        - label: "I have taken the time to fill in all the required details. I understand that the bug report will be dismissed otherwise."
+          required: true
+        - label: "This issue contains only one bug."
+          required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: Affected version
+      description: "In which version did you encounter the bug?"
+      placeholder: "x.x.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of the problem
+      description: |
+        Describe as exactly as possible what is not working.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce the bug
+      description: |
+        What did you do for the bug to show up?
+
+        If you can't cause the bug to show up again reliably (and hence don't have a proper set of steps to give us), please still try to give as many details as possible on how you think you encountered the bug.
+      placeholder: |
+        1. Use '...'
+        2. Do '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: |
+        Any other relevant information you'd like to include, e.g. screenshots or video recordings of the bug
