@@ -130,7 +130,7 @@ jobs:
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Only import once
 
     - name: Publish to GitHub Packages Central
-      run: ../mvnw -B deploy -P publish -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central
+      run: ../mvnw -B deploy -P publish -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central -T4
       working-directory: src
       env:
         PACKAGES_CENTRAL_TOKEN: ${{ secrets.PACKAGES_CENTRAL_TOKEN }}
