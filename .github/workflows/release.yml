@@ -126,6 +126,7 @@ jobs:
         java-version: '17'
         server-id: github-central
         server-password-env-var: PACKAGES_CENTRAL_TOKEN
+        mvn-server-repository-origins: github-central:https://maven.pkg.github.com
 
     - name: Publish to GitHub Packages Central
       run: ../mvnw -B deploy -P publish -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central -T4
@@ -143,6 +144,7 @@ jobs:
         server-id: sonatype-central-portal
         server-username-env-var: MAVEN_CENTRAL_USERNAME
         server-password-env-var: MAVEN_CENTRAL_TOKEN
+        mvn-server-repository-origins: sonatype-central-portal:https://central.sonatype.com
 
     - name: Publish to Central Portal
       run: ../mvnw -B deploy -P publish,publish-sonatype-central-portal
