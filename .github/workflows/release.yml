@@ -126,8 +126,6 @@ jobs:
         java-version: '17'
         server-id: github-central
         server-password-env-var: PACKAGES_CENTRAL_TOKEN
-        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
-        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Only import once
 
     - name: Publish to GitHub Packages Central
       run: ../mvnw -B deploy -P publish -DaltDeploymentRepository=github-central::https://maven.pkg.github.com/xdev-software/central -T4
@@ -135,6 +133,7 @@ jobs:
       env:
         PACKAGES_CENTRAL_TOKEN: ${{ secrets.PACKAGES_CENTRAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # ASCII-armored secret key: gpg --armor --export-secret-keys KEY_ID
 
     - name: Set up JDK
       uses: actions/setup-java@v6
@@ -144,7 +143,6 @@ jobs:
         server-id: sonatype-central-portal
         server-username-env-var: MAVEN_CENTRAL_USERNAME
         server-password-env-var: MAVEN_CENTRAL_TOKEN
-        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
 
     - name: Publish to Central Portal
       run: ../mvnw -B deploy -P publish,publish-sonatype-central-portal
@@ -153,6 +151,7 @@ jobs:
         MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_USERNAME }}
         MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_MAVEN_CENTRAL_PORTAL_TOKEN }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # ASCII-armored secret key: gpg --armor --export-secret-keys KEY_ID
 
   build-pages:
     runs-on: ubuntu-latest

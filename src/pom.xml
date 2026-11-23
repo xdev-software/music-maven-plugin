@@ -236,12 +236,9 @@
 									<goal>sign</goal>
 								</goals>
 								<configuration>
-									<!-- Fixes "gpg: signing failed: Inappropriate ioctl for device" -->
-									<!-- Prevent `gpg` from using pinentry programs -->
-									<gpgArguments>
-										<arg>--pinentry-mode</arg>
-										<arg>loopback</arg>
-									</gpgArguments>
+									<!-- Sign with BouncyCastle so that no gpg executable is needed -->
+									<!-- Reads directly from MAVEN_GPG_KEY env var -->
+									<signer>bc</signer>
 								</configuration>
 							</execution>
 						</executions>
