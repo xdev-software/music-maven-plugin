@@ -15,7 +15,7 @@
     {
       "description": "Ignore project internal dependencies",
       "matchPackagePatterns": [
-        "^software.xdev.*:template-placeholder",
+        "^software.xdev.*:music-maven-plugin",
         "^software.xdev.*:demos",
         "^software.xdev.*:src",
         "^software.xdev.*:root"

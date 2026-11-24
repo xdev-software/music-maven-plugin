@@ -7,14 +7,14 @@
 	<parent>
 		<groupId>software.xdev</groupId>
 		<artifactId>root</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>2.0.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>src</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>template-placeholder</module>
+		<module>music-maven-plugin</module>
 	</modules>
 
 	<build>
